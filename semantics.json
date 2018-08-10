@@ -1,0 +1,77 @@
+[
+  {
+    "label": "Question",
+    "importance": "high",
+    "name": "question",
+    "type": "text",
+    "widget": "html",
+
+    "description": "Describe how the user should solve the task.",
+    "enterMode": "p",
+   "tags": [
+     "strong",
+     "em",
+     "u",
+     "a",
+     "ul",
+     "ol",
+     "h2",
+     "h3",
+     "hr"
+    ]
+  },
+  {
+    "label" : "Text",
+    "importance" : "high",
+    "name" : "textField",
+    "type" : "text",
+    "widget" : "html",
+
+    "tags": [
+      "strong",
+      "em",
+      "u",
+      "a",
+      "ul,",
+      "ol",
+      "h2",
+      "h3",
+      "hr"
+    ],
+
+    "description" : "Correct letters are marked with asterisks (*) before and after the letter. ",
+    "placeholder" : "correct answer is *answer*"
+  },
+  {
+    "label" : "Solution",
+    "importance" : "high",
+    "name" : "solution",
+    "type" : "text",
+    "optional" : true,
+    "description" : "Enter the correct solution here if you need to take all occurance of the specific letter as answer."
+  },
+  {
+    "label": "Text for \"Check\" button",
+    "importance": "low",
+    "name": "checkAnswerButton",
+    "type": "text",
+    "default": "Check",
+    "common": true
+  },
+  {
+    "label": "Text for \"Retry\" button",
+    "importance": "low",
+    "name": "tryAgainButton",
+    "type": "text",
+    "default": "Retry",
+    "common": true
+  },
+  {
+    "label": "Text for \"Show solution\" button",
+    "importance": "low",
+    "name": "showSolutionButton",
+    "type": "text",
+    "default": "Show solution",
+    "common": true
+  }
+]

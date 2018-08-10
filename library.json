@@ -1,0 +1,43 @@
+{
+  "title": "Mark the Letters",
+  "description": "Test your users by making them select the correct letter from a text.",
+  "majorVersion": 1,
+  "minorVersion": 0,
+  "patchVersion": 0,
+
+  "runnable": 1,
+  "embedTypes": [
+    "iframe"
+  ],
+  "author": "H5P-SPACE",
+  "license": "MIT",
+  "machineName": "H5P.MarkTheLetters",
+  "preloadedJs" : [
+    {
+      "path" : "scripts/mark-the-letters.js"
+    }
+
+  ],
+  "preloadedCss": [
+    {
+      "path" : "css/h5p-mark-the-letters.css"
+    }
+  ],
+  "preloadedDependencies": [
+    {
+      "machineName": "FontAwesome",
+      "majorVersion": 4,
+      "minorVersion": 5
+    },
+    {
+      "machineName": "H5P.JoubelUI",
+      "majorVersion": 1,
+      "minorVersion": 3
+    },
+    {
+      "machineName": "H5P.Question",
+      "majorVersion": 1,
+      "minorVersion": 4
+    }
+  ]
+}
