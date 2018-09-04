@@ -11,7 +11,7 @@ li{
   color: black;
   border: 1px solid lightblue;
   border-radius: 5px;
-  background:lightblue;
+
   cursor:pointer;
   font-size:1.2em;
   text-align:center;
@@ -20,13 +20,7 @@ li{
   outline: none;
 }
 
-.ans{
-  color: blue;
 
-}
-.wrong{
-  color:red;
-}
 .div-alpha{
 
      color: black;
@@ -42,4 +36,111 @@ li{
      height: 30px; */
      margin:3px;
      outline: none;
+}
+
+.paragraph-container{
+  font-size: 1em;
+  font-weight: normal;
+  padding: 0;
+  margin: 0 0 1em;
+  line-height: inherit;
+}
+
+
+.h5p-question-check-answer .h5p-joubelui-button
+{
+  margin: 0 0.5em 0 0;
+  white-space: nowrap;
+}
+.button-container{
+  margin: 1em;
+}
+.correct-answer{
+
+  background: #9dd8bb;
+  color: #255c41;
+  margin:3px;
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  padding: 0.15em;
+  border-radius: 0.25em;
+  position: relative;
+}
+
+.wrong-answer{
+
+  background: red;
+  color: #255c41;
+  margin:3px;
+  display: inline-block;
+  line-height: 1;
+  white-space: nowrap;
+  padding: 0.15em;
+  border-radius: 0.25em;
+  position: relative;
+}
+
+
+[aria-describedby="h5p-description-correct"] {
+  background: #9dd8bb;
+  color: #255c41;
+  display: inline-block;
+  line-height: 1;
+  width: 2.5em;
+}
+
+[aria-describedby="h5p-description-incorrect"] {
+background:#ff4d4d;
+color: #cc0000;
+display: inline-block;
+text-decoration: line-through;
+line-height: 1;
+width: 2.5em;
+}
+
+[aria-describedby="h5p-description-correct"]:after {
+  /* margin-right: 15px; */
+  position: relative;
+  right: 0.1em;
+  text-decoration: none;
+  /* display: inline-block; */
+  content: "\f00c";
+  font-family: 'H5PFontAwesome4';
+  color: #255c41;
+  padding-left: 0.75em;
+}
+
+[aria-describedby="h5p-description-incorrect"]:after {
+  /* margin-right: 15px; */
+  position: relative;
+  right: 0.1em;
+  /* display: inline-block; */
+  font-family: 'H5PFontAwesome4';
+  text-decoration: none;
+  content: "\f00d";
+  color: #cc0000;
+  padding-left: 0.75em;
+
+}
+
+
+.question-plus-one {
+    background-image: url(../images/index.svg);
+}
+.question-minus-one {
+    background-image: url(../images/minus-one.svg);
+}
+
+.question-plus-one, .question-minus-one {
+    position: absolute;
+    width: 1.923076923em;
+    height: calc(1.923076923em * 0.638297872);
+    background-size: 100% 100%;
+    /* right: -1.615384615em; */
+    top: 5.5em;
+    z-index: 1;
+    opacity: 1;
+    padding-left: 4em;
+    transition: opacity 150ms linear, transform 150ms linear;
 }
