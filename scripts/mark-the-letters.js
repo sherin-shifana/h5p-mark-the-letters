@@ -3,6 +3,7 @@ H5P.MarkTheLetters = (function($, Question, UI) {
 
     function MarkTheLetters(params, id) {
         //constructor
+        Question.call(this, 'mark-the-letters');
 
         var self = this;
         this.id = id;
@@ -15,8 +16,10 @@ H5P.MarkTheLetters = (function($, Question, UI) {
         var clickedLetters = [];
         var correctAnswer = [];
         var wrongAnswer = [];
+        var index = [];
+        var  input = [];
         var score = 0;
-        var maxScore;
+        var max;
         var defaults = {
            image: null,
            question: "No question text provided",
@@ -46,37 +49,64 @@ H5P.MarkTheLetters = (function($, Question, UI) {
             // console.log(correctAnswer);
             // console.log(wrongAnswer);
             // console.log(clickedLetters);
-            maxScore = index.length;
+            max = index.length;
             $checkButtonContainer.hide();
-            var dataList = $(".list li").map(function() {
-                return $(this).data("id");
-            }).get();
-
             $("li").each(function(el) {
                 for (j = 0; j < correctAnswer.length; j++) {
                     if (el == correctAnswer[j]) {
                         $(this).attr("aria-describedby", "h5p-description-correct");
-                        $(this).addClass("correct-position");
-                        $(this).append('<div class="question-plus-one"></div>');
+
+                        $(this).append('<div class="h5p-question-plus-one"></div>');
                         score++;
 
-                        var qHeight= $(this).height();
-                        var pos=$(this).position();
-                        console.log(pos.top-qHeight );
+                        // var qHeight= $(this).height();
+                        // var pos=$(".question-plus-one").position();
+                        // var cHeight = $(".question-plus-one").height();
+                        // console.log(qHeight);
+                        // console.log(pos);
+                        // $(".question-plus-one").css('top',(pos.top-qHeight-cHeight));
                     }
                 }
                 for (j = 0; j < wrongAnswer.length; j++) {
                     if (el == wrongAnswer[j]) {
                         $(this).attr("aria-describedby", "h5p-description-incorrect");
-                        $(this).addClass("incorrect-position");
-                        $(this).append('<div class="question-minus-one"></div>');
-                        var iTop=$(".incorrect-position").position();
+                        $(this).append('<div class="h5p-question-minus-one"></div>');
+                        // var qHeight= $(this).height();
+                        // var pos=$(".question-minus-one").position();
+                        // var cHeight = $(".question-minus-one").height();
+                        // console.log(qHeight);
+                        // console.log(pos);
+                        // $(".question-minus-one").css('top',(pos.top-qHeight-cHeight));
+                        //
                     }
                 }
             });
+            var $feedbackDialog;
 
+            var addFeedback = function (feedback) {
+                $feedbackDialog = $('' +
+                '<div class="h5p-feedback-dialog">' +
+                  '<div class="h5p-feedback-inner">' +
+                    '<div class="h5p-feedback-text" aria-hidden="true">' + feedback + '</div>' +
+                  '</div>' +
+                '</div>').appendTo($container);
+
+                //make sure feedback is only added once
+                if (!$element.find($('.h5p-feedback-dialog')).length) {
+                  $feedbackDialog.appendTo($element.addClass('h5p-has-feedback'));
+                }
+            };
+
+            var getFeedbackText = function (score, max) {
+                var ratio = (score / max);
+
+                var feedback = H5P.Question.determineOverallFeedback(self.params.overallFeedback, ratio);
+
+                return feedback.replace('@score', score).replace('@total', max);
+            };
+            self.setFeedback(getFeedbackText(score, max), score, max, self.params.scoreBarLabel);
             console.log(score);
-            console.log(maxScore);
+            console.log(max);
 
 
               self.$retry = UI.createButton({
@@ -84,8 +114,11 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                 'text' : self.params.tryAgainButton,
                 'class': 'retry h5p-question-try-again h5p-joubelui-button',
                 click : function(){
+
                   $container.empty();
                   self.attach($container);
+                  clickedLetters.length=0;
+                  console.log(clickedLetters);
                 },
 
               });
@@ -144,40 +177,60 @@ H5P.MarkTheLetters = (function($, Question, UI) {
         self.attach = function($container) {
 
             $container.append('<div class="task-description">' + self.params.question + '</div>');
-            var str2 = str;
+
             var answer = self.params.solution;
-            answer = answer.replace(/\,/g, "");
-            var result = [];
 
-            if ($(answer).val() !== null) {
-                for (i = 0; i < answer.length; i++) {
-                    var res = str.split(answer[i]);
-                    var a = res.join("*" + answer[i] + "*");
-                    str = a;
-                }
+            if(self.params.addSolution=="false")
+            {
+              input=[];
+              index=[];
+
+              input = str.match(/(\*.\*)/g);
+              str = str.replace(/\*\*/g, '*');
+              str = str.replace(/(\*)/g, "");
+              for (i = 0; i < input.length; i++) {
+
+                  input[i] = input[i].replace(/(\*)/g, "");
+                  index.push(str.indexOf(input[i]));
+              }
+
+            }
+            else{
+
+              answer = answer.replace(/\,/g, "");
+              str = str.replace(/\*\*/g, '*');
+              str = str.replace(/(\*)/g, "");
+                  if ($(answer).val() !== null) {
+                      for (i = 0; i < answer.length; i++) {
+                          var res = str.split(answer[i]);
+                          var a = res.join("*" + answer[i] + "*");
+                          str = a;
+                      }
+                  }
+                  input=[];
+                  var correctInput = [];
+                  input = str.match(/(\*.\*)/g);
+                  str = str.replace(/\*\*/g, '*');
+                  str = str.replace(/(\*)/g, "");
+
+                  for (i = 0; i < input.length; i++) {
+                      input[i] = input[i].replace(/(\*)/g, "");
+                  }
+
+                  for (i = 0; i < str.length; i++) {
+                      for (j = 0; j < input.length; j++) {
+                          if (str[i] === input[j]) {
+                              correctInput.push(i);
+                          }
+                      }
+                  }
+
+                  index = [];
+                  $.each(correctInput, function(i, el) {
+                      if ($.inArray(el, index) === -1) index.push(el);
+                  });
             }
 
-            var input = [];
-            var correctInput = [];
-            input = str.match(/(\*.\*)/g);
-            str = str.replace(/\*\*/g, '*');
-            console.log(str);
-            str = str.replace(/(\*)/g, "");
-            for (i = 0; i < input.length; i++) {
-                input[i] = input[i].replace(/(\*)/g, "");
-            }
-
-            for (i = 0; i < str.length; i++) {
-                for (j = 0; j < input.length; j++) {
-                    if (str[i] === input[j]) {
-                        correctInput.push(i);
-                    }
-                }
-            }
-            var index = [];
-            $.each(correctInput, function(i, el) {
-                if ($.inArray(el, index) === -1) index.push(el);
-            });
 
             console.log(input);
             console.log(index);
@@ -203,6 +256,7 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                 $li.click(function() {
                     $(this).addClass("div-alpha");
                     $(this).removeClass("new-li");
+
                     var x = $(this).data('id');
                     clickedLetters.push(x);
 
@@ -211,9 +265,7 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                         if (index[k] === x) {
                             flag = 1;
                             correctAnswer.push(x);
-                            // $(this).attr("aria-label","correct");
-                            // $(this).attr("aria-describedby","h5p-description-correct");
-                            // $(this).a('<div class="h5p-question-plus-one"></div>');
+
                         }
                     }
                     wrongAnswer = $.grep(clickedLetters, function(value) {
@@ -232,6 +284,9 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                 'text': self.params.checkAnswerButton,
                 click: function() {
                     $(this).attr("disabled", true);
+                    $("li").attr('disabled',true);
+                    $("li").removeAttr('class');
+                    $("li").off("click");
                     checkAnswer($container, $ul, $li, correctAnswer, wrongAnswer, clickedLetters, $checkButtonContainer,index);
                 },
             }).appendTo($checkButtonContainer);
