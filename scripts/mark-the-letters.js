@@ -18,7 +18,8 @@ H5P.MarkTheLetters = (function($, Question, UI) {
         var wrongAnswers = [];
         var index = [];
         var input = [];
-        var score = 0;
+        var wrong = 0;
+        var correct = 0;
         var max;
         var defaults = {
             image: null,
@@ -48,13 +49,20 @@ H5P.MarkTheLetters = (function($, Question, UI) {
             $checkButtonContainer.hide();
             var top;
             $("li").each(function(el) {
+                var $el = $('<div class="h5p-mark-the-words-descriptions"></div>');
                 for (j = 0; j < correctAnswers.length; j++) {
                     top = 0;
                     if (el == correctAnswers[j]) {
+
                         $(this).attr("aria-describedby", "h5p-description-correct");
-                        // $(this).append('<div class="question-plus-one"></div>');
-                        score++;
+                        // $(this).append('<div class="h5p-question-plus-one"></div>');
+                        correct++;
+
                         // var qHeight = $(this).height();
+                        // console.log(qHeight);
+                        // var pos = $(".h5p-question-plus-one").position();
+                        // console.log(pos.top);
+                        // $("h5p-question-plus-one").css('top',-qHeight+'px');
                         // var pos = $(".question-plus-one").position();
                         // var cHeight = $(".question-plus-one").height();
                         // console.log(qHeight);
@@ -68,6 +76,7 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                 for (j = 0; j < wrongAnswers.length; j++) {
                     if (el == wrongAnswers[j]) {
                         $(this).attr("aria-describedby", "h5p-description-incorrect");
+                        wrong++;
                         // $(this).append('<div class="question-minus-one"></div>');
                         // qHeight = $(this).height();
                         // pos = $(".question-minus-one").position();
@@ -78,8 +87,15 @@ H5P.MarkTheLetters = (function($, Question, UI) {
 
                     }
                 }
+                return $el;
             });
 
+            if(correct>=wrong){
+              var score = (correct - wrong) ;
+            }
+            else{
+              score = 0;
+            }
             var $feedbackContainer = $('<div class=feedback-container></div>').appendTo($container);
             var ratio = (score / max);
             var feedback = H5P.Question.determineOverallFeedback(self.params.overallFeedback, ratio);
@@ -92,9 +108,10 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                 '</div><br />').appendTo($feedbackContainer);
 
             self.setFeedback(feedback, score, max, self.params.scoreBarLabel);
-            self.$progressBar = UI.createScoreBar(max, 'scoreBarLabel');
+            self.$progressBar = UI.createScoreBar(max, self.params.scoreBarLabel);
             self.$progressBar.setScore(score);
-            self.$progressBar.appendTo($feedbackDialog);
+            self.$progressBar.appendTo($feedbackContainer);
+
 
             self.$retry = UI.createButton({
                 title: 'Retry Button',
@@ -102,6 +119,9 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                 'class': 'retry h5p-question-try-again h5p-joubelui-button',
                 click: function() {
                     $container.empty();
+                    score = 0;
+                    wrong=0;
+                    correct=0;
                     clickedLetters.length = 0;
                     wrongAnswers.length = 0;
                     correctAnswers.length = 0;
@@ -119,7 +139,10 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                     $("li").each(function(el) {
                         for (i = 0; i < index.length; i++) {
                             if ($(this).attr("data-id") == index[i]) {
-                                $(this).attr("aria-describedby","h5p-description-missed");
+                                if(!$(this).attr("aria-describedby"))
+                                {
+                                  $(this).attr("aria-describedby", "h5p-description-missed");
+                                }
                             }
                         }
                     });
