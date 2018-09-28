@@ -48,70 +48,50 @@ H5P.MarkTheLetters = (function($, Question, UI) {
             max = index.length;
             $checkButtonContainer.hide();
             var top;
+
             $("li").each(function(el) {
                 var $el = $('<div class="h5p-mark-the-words-descriptions"></div>');
                 for (j = 0; j < correctAnswers.length; j++) {
-                    top = 0;
                     if (el == correctAnswers[j]) {
-
                         $(this).attr("aria-describedby", "h5p-description-correct");
-                        // $(this).append('<div class="h5p-question-plus-one"></div>');
+                        $(this).append('<div class="question-plus-one"></div>');
                         correct++;
-
-                        // var qHeight = $(this).height();
-                        // console.log(qHeight);
-                        // var pos = $(".h5p-question-plus-one").position();
-                        // console.log(pos.top);
-                        // $("h5p-question-plus-one").css('top',-qHeight+'px');
-                        // var pos = $(".question-plus-one").position();
-                        // var cHeight = $(".question-plus-one").height();
-                        // console.log(qHeight);
-                        // console.log(pos);
-                        // top = pos.top;
-                        // top = top - cHeight - qHeight;
-                        // $(".question-plus-one").css('top', (top));
-                        // console.log(top);
                     }
                 }
                 for (j = 0; j < wrongAnswers.length; j++) {
                     if (el == wrongAnswers[j]) {
+                        // console.log($(this).position(), $(this).height());
                         $(this).attr("aria-describedby", "h5p-description-incorrect");
                         wrong++;
-                        // $(this).append('<div class="question-minus-one"></div>');
-                        // qHeight = $(this).height();
-                        // pos = $(".question-minus-one").position();
-                        // cHeight = $(".question-minus-one").height();
-                        // console.log(qHeight);
-                        // console.log(pos);
-                        // $(".question-minus-one").css('top', (pos.top - qHeight - cHeight));
+                        $(this).append('<div class="question-minus-one"></div>');
 
                     }
                 }
                 return $el;
             });
 
-            if(correct>=wrong){
-              var score = (correct - wrong) ;
+            if (correct >= wrong) {
+                var score = (correct - wrong);
+            } else {
+                score = 0;
             }
-            else{
-              score = 0;
-            }
-            var $feedbackContainer = $('<div class=feedback-container></div>').appendTo($container);
+            // var $feedbackContainer = $('<div class=feedback-container></div>').appendTo($container);
+            var $buttonContainer = $('<div class="button-container"></div>').appendTo($container);
             var ratio = (score / max);
             var feedback = H5P.Question.determineOverallFeedback(self.params.overallFeedback, ratio);
+            feedback = feedback.charAt(0).toUpperCase() + feedback.substr(1).toLowerCase();
             feedback.replace('@score', score).replace('@total', max);
             var $feedbackDialog = $('' +
                 '<div class="h5p-feedback-dialog">' +
                 '<div class="h5p-feedback-inner">' +
                 '<div class="h5p-feedback-text" aria-hidden="true">' + feedback + '</div>' +
                 '</div>' +
-                '</div><br />').appendTo($feedbackContainer);
+                '</div><br />').appendTo($buttonContainer);
 
             self.setFeedback(feedback, score, max, self.params.scoreBarLabel);
             self.$progressBar = UI.createScoreBar(max, self.params.scoreBarLabel);
             self.$progressBar.setScore(score);
-            self.$progressBar.appendTo($feedbackContainer);
-
+            self.$progressBar.appendTo($buttonContainer);
 
             self.$retry = UI.createButton({
                 title: 'Retry Button',
@@ -120,8 +100,8 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                 click: function() {
                     $container.empty();
                     score = 0;
-                    wrong=0;
-                    correct=0;
+                    wrong = 0;
+                    correct = 0;
                     clickedLetters.length = 0;
                     wrongAnswers.length = 0;
                     correctAnswers.length = 0;
@@ -136,12 +116,12 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                     $(".question-plus-one").hide();
                     $(".question-minus-one").hide();
                     $(this).hide();
+
                     $("li").each(function(el) {
                         for (i = 0; i < index.length; i++) {
                             if ($(this).attr("data-id") == index[i]) {
-                                if(!$(this).attr("aria-describedby"))
-                                {
-                                  $(this).attr("aria-describedby", "h5p-description-missed");
+                                if (!$(this).attr("aria-describedby")) {
+                                    $(this).attr("aria-describedby", "h5p-description-missed");
                                 }
                             }
                         }
@@ -152,35 +132,35 @@ H5P.MarkTheLetters = (function($, Question, UI) {
             if (clickedLetters.length > 0) {
                 if (correctAnswers.length === 0) {
                     console.log("incorrect");
-                    self.$retry.appendTo($container);
-                    self.$showSolution.appendTo($container);
+                    self.$retry.appendTo($buttonContainer);
+                    self.$showSolution.appendTo($buttonContainer);
                 }
                 if (wrongAnswers.length === 0) {
                     console.log("correct");
                     if (correctAnswers.length != index.length) {
-                        self.$retry.appendTo($container);
-                        self.$showSolution.appendTo($container);
+                        self.$retry.appendTo($buttonContainer);
+                        self.$showSolution.appendTo($buttonContainer);
                     }
                 }
                 if (correctAnswers.length > 0 && wrongAnswers.length > 0) {
                     console.log("mixed");
                     if (correctAnswers.length == index.length) {
-                        self.$retry.appendTo($container);
+                        self.$retry.appendTo($buttonContainer);
                     } else {
-                        self.$retry.appendTo($container);
-                        self.$showSolution.appendTo($container);
+                        self.$retry.appendTo($buttonContainer);
+                        self.$showSolution.appendTo($buttonContainer);
                     }
                 }
-            }
-            else {
-                self.$retry.appendTo($container);
-                self.$showSolution.appendTo($container);
+            } else {
+                self.$retry.appendTo($buttonContainer);
+                self.$showSolution.appendTo($buttonContainer);
             }
         }
 
         self.attach = function($container) {
+            $container.addClass("h5p-mark-the-letters");
 
-            $container.append('<div class="task-description">' + self.params.question + '</div>');
+            $container.append('<div class="task-description">'+( self.params.question) + '</div>');
             var answer = self.params.solution;
             if (self.params.addSolution == "false") {
                 input = [];
@@ -190,10 +170,13 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                 str = str.replace(/(\*)/g, "");
                 for (i = 0; i < input.length; i++) {
                     input[i] = input[i].replace(/(\*)/g, "");
-                    index.push(str.indexOf(input[i]));
+                    // index.push(str.indexOf(input[i]));
+                    var res = str.split(answer[i]);
+                    var a = res.join("*" + answer[i] + "*");
+                    str = a;
                 }
-            }
-            else {
+
+            } else {
                 answer = answer.replace(/\,/g, "");
                 str = str.replace(/\*\*/g, '*');
                 str = str.replace(/(\*)/g, "");
@@ -237,6 +220,9 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                 nodeIndex = i;
                 $(this).data('id', nodeIndex);
                 var $li = $('<li id="li-class" data-id="' + nodeIndex + '">' + node + '</li>').appendTo($ul);
+
+                var $current = $("li").first().attr("tabindex", 0);
+
                 if (str.charCodeAt(i) !== 32) {
                     if (str.charCodeAt(i) !== 44) {
                         if (str.charCodeAt(i) !== 46) {
@@ -245,49 +231,100 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                     }
                 }
                 else {
-                    $li.removeClass("new-li");
+                  $li.addClass("special-char");
+
                 }
-
+                $li.find("special-char").off("click");
+                var clkCount = 0;
+                var keyCount = 0;
                 $li.click(function() {
-
-                    $(this).addClass("div-alpha");
-                    $(this).removeClass("new-li");
-
-                    var x = $(this).data('id');
-                    clickedLetters.push(x);
-
-                    console.log(x);
-                    for (k = 0; k < index.length; k++) {
-                        if (index[k] === x) {
-                            flag = 1;
-                            correctAnswers.push(x);
-
+                        clkCount++;
+                        $(this).attr("role","option");
+                        if(!$(this).hasClass("special-char")){
+                          $(this).toggleClass("div-alpha");
+                          $(this).removeClass("new-li");
+                          var x = $(this).data('id');
+                          if($(this).hasClass("div-alpha")){
+                            clickedLetters.push(x);
+                            for (k = 0; k < index.length; k++) {
+                                if (index[k] === x) {
+                                    flag = 1;
+                                    correctAnswers.push(x);
+                                }
+                            }
+                            wrongAnswers = $.grep(clickedLetters, function(value) {
+                                return $.inArray(value, correctAnswers) < 0;
+                            });
+                          }
                         }
-                    }
-                    wrongAnswers = $.grep(clickedLetters, function(value) {
-                        return $.inArray(value, correctAnswers) < 0;
+                    })
+                    .keydown(function(event) {
+                      if($(this).hasClass("special-char")){
+                        $(this).attr("tabindex",-1);
+                      }
+                        switch (event.which) {
+                            case 13: // Enter
+                            case 32: // Space;
+                              // keyCount++;
+                              if (!$(this).hasClass("special-char")) {
+                                  $(this).toggleClass("div-alpha");
+                                  $(this).removeClass("new-li");
+                                  var x = $(this).data('id');
+                                  if($(this).hasClass("div-alpha")){
+                                    clickedLetters.push(x);
+                                    for (k = 0; k < index.length; k++) {
+                                        if (index[k] === x) {
+                                            flag = 1;
+                                            correctAnswers.push(x);
+                                        }
+                                    }
+                                    wrongAnswers = $.grep(clickedLetters, function(value) {
+                                        return $.inArray(value, correctAnswers) < 0;
+                                    });
+                                  }
+                                }
+                                break;
+                            case 37: // Left Arrow
+                            case 38: // Up Arrow
+                                // Go to previous dot
+                                $(this).attr('tabindex', '-1');
+                                $current = $(this).prev();
+                                $current.attr('tabindex', 0).focus();
+                                console.log($current);
+                                break;
+
+                            case 39: // Right Arrow
+                            case 40: // Down Arrow
+                                // Go to next dot
+                                $(this).attr('tabindex', '-1');
+                                $current = $(this).next();
+                                $current.attr('tabindex', 0).focus();
+                                console.log($current);
+                                break;
+                        }
                     });
-                });
             }
-
             console.log(answer);
-
 
             var $checkButtonContainer = $('<div class="button-container" />').appendTo($container);
             self.$checkAnswer = UI.createButton({
-                title: 'Button',
+                title: 'Button',          
                 'class': 'check-answer h5p-question-check-answer h5p-joubelui-button',
                 'text': self.params.checkAnswerButton,
                 click: function() {
                     $(this).attr("disabled", true);
-                    $("li").attr('disabled', true);
+                    $("li").attr("disabled", true);
                     $("li").removeAttr('class');
                     $("li").off("click");
+                    $("li").attr("tabindex","-1");
                     checkAnswer($container, $ul, $li, correctAnswers, wrongAnswers, clickedLetters, $checkButtonContainer, index);
                 },
             }).appendTo($checkButtonContainer);
         }
+        self.trigger('resize');
     }
+    MarkTheLetters.prototype = Object.create(H5P.EventDispatcher.prototype);
+    MarkTheLetters.prototype.constructor = MarkTheLetters;
     return MarkTheLetters;
 
 })(H5P.jQuery, H5P.Question, H5P.JoubelUI);
