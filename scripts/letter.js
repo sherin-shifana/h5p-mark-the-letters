@@ -25,7 +25,7 @@ H5P.MarkTheLetters.Letter = (function () {
     function checkForAnswer() {
       // Check last and next to last character, in case of punctuations.
       var letterString = removeDoubleAsterisks(input);
-      if (letterString.charAt(0) === ('*') && letterString.length > 2) {
+      if (letterString.charAt(0) === ('*') && letterString.length > 0) {
         if (letterString.charAt(letterString.length - 1) === ('*')) {
           handledInput = input.slice(1, input.length - 1);
           return true;

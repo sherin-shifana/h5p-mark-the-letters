@@ -46,28 +46,49 @@ H5P.MarkTheLetters = (function($, Question, UI) {
 
         var checkAnswer = function($container, $ul, $li, correctAnswers, wrongAnswers, clickedLetters, $checkButtonContainer, index) {
             max = index.length;
+            console.log(correctAnswers);
+            console.log(wrongAnswers);
+            console.log(clickedLetters);
             $checkButtonContainer.hide();
             var top;
 
+            var scorePoints = new H5P.Question.ScorePoints();
+
             $("li").each(function(el) {
-                var $el = $('<div class="h5p-mark-the-words-descriptions"></div>');
+                // var $el = $('<div class="h5p-mark-the-words-descriptions"></div>');
                 for (j = 0; j < correctAnswers.length; j++) {
                     if (el == correctAnswers[j]) {
                         $(this).attr("aria-describedby", "h5p-description-correct");
-                        $(this).append('<div class="question-plus-one"></div>');
+                        $(this).append(scorePoints.getElement(true));
+                        var offset = $(this).offset();
+                        var height = $(this).height();
+                        var width = $(this).width();
+                        var outerWidth = $(this).outerWidth();
+                        var offRight = $(window).width() - offset.left;
+                        var top = (offset.top - (height*1.3-3))/16 + "em";
+                        var right = (offRight - (width*1.8))/16 +"em";
+                        $(this).children().css('top',top).css('right',right);
                         correct++;
                     }
                 }
                 for (j = 0; j < wrongAnswers.length; j++) {
                     if (el == wrongAnswers[j]) {
-                        // console.log($(this).position(), $(this).height());
                         $(this).attr("aria-describedby", "h5p-description-incorrect");
+                        $(this).append(scorePoints.getElement(false));
+                        offset = $(this).offset();
+                        height = $(this).height();
+                        width = $(this).width();
+                        outerWidth = $(this).outerWidth();
+                        offRight = $(window).width() - offset.left;
+                        top = (offset.top - (height*1.3-3))/16 + "em";
+                        right = (offRight - (width*1.8))/16 +"em";
+                        $(this).children().css('top',top).css('right',right);
                         wrong++;
-                        $(this).append('<div class="question-minus-one"></div>');
-
                     }
                 }
-                return $el;
+
+
+
             });
 
             if (correct >= wrong) {
@@ -113,8 +134,8 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                 'text': self.params.showSolutionButton,
                 'class': 'show-solution h5p-question-show-solution h5p-joubelui-button',
                 click: function() {
-                    $(".question-plus-one").hide();
-                    $(".question-minus-one").hide();
+                    $(".h5p-question-plus-one").hide();
+                    $(".h5p-question-minus-one").hide();
                     $(this).hide();
 
                     $("li").each(function(el) {
@@ -175,7 +196,6 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                     var a = res.join("*" + answer[i] + "*");
                     str = a;
                 }
-
             } else {
                 answer = answer.replace(/\,/g, "");
                 str = str.replace(/\*\*/g, '*');
@@ -222,7 +242,6 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                 var $li = $('<li id="li-class" data-id="' + nodeIndex + '">' + node + '</li>').appendTo($ul);
 
                 var $current = $("li").first().attr("tabindex", 0);
-
                 if (str.charCodeAt(i) !== 32) {
                     if (str.charCodeAt(i) !== 44) {
                         if (str.charCodeAt(i) !== 46) {
@@ -232,31 +251,42 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                 }
                 else {
                   $li.addClass("special-char");
-
                 }
                 $li.find("special-char").off("click");
                 var clkCount = 0;
                 var keyCount = 0;
                 $li.click(function() {
+                  // prompt("enter something");
+
                         clkCount++;
                         $(this).attr("role","option");
-                        if(!$(this).hasClass("special-char")){
+                        // if(!$(this).hasClass("special-char")){
                           $(this).toggleClass("div-alpha");
                           $(this).removeClass("new-li");
                           var x = $(this).data('id');
-                          if($(this).hasClass("div-alpha")){
-                            clickedLetters.push(x);
-                            for (k = 0; k < index.length; k++) {
-                                if (index[k] === x) {
-                                    flag = 1;
-                                    correctAnswers.push(x);
-                                }
-                            }
-                            wrongAnswers = $.grep(clickedLetters, function(value) {
-                                return $.inArray(value, correctAnswers) < 0;
-                            });
+
+                        // }
+                        if($(this).hasClass("div-alpha")){
+                          clickedLetters.push(x);
+                          for (k = 0; k < index.length; k++) {
+                              if (index[k] === x) {
+                                  flag = 1;
+                                  correctAnswers.push(x);
+                              }
+                          }
+                          wrongAnswers = $.grep(clickedLetters, function(value) {
+                              return $.inArray(value, correctAnswers) < 0;
+                          });
+                          // console.log("wrk");
+                        }
+                        else{
+
+                          if(clickedLetters.includes(x)){
+                             clickedLetters.pop(x);
+                             correctAnswers.pop(x);
                           }
                         }
+
                     })
                     .keydown(function(event) {
                       if($(this).hasClass("special-char")){
@@ -303,12 +333,14 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                                 break;
                         }
                     });
+
+
             }
             console.log(answer);
 
             var $checkButtonContainer = $('<div class="button-container" />').appendTo($container);
             self.$checkAnswer = UI.createButton({
-                title: 'Button',          
+                title: 'Button',
                 'class': 'check-answer h5p-question-check-answer h5p-joubelui-button',
                 'text': self.params.checkAnswerButton,
                 click: function() {
