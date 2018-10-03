@@ -1,249 +1,343 @@
-/**
- * @class
- * @classdesc Keyboard navigation for accessibility support
- * @extends H5P.EventDispatcher
- */
-H5P.KeyboardNav = (function (EventDispatcher) {
-  /**
-   * Construct a new KeyboardNav
-   * @constructor
-   */
-  function KeyboardNav() {
-    EventDispatcher.call(this);
+H5P.MarkTheLetters = (function($, Question, UI) {
 
-    /** @member {boolean} */
-    this.selectability = true;
 
-    /** @member {HTMLElement[]|EventTarget[]} */
-    this.elements = [];
-  }
+    function MarkTheLetters(params, id) {
+        //constructor
+        H5P.Question.call(this, 'mark-the-letters');
 
-  KeyboardNav.prototype = Object.create(EventDispatcher.prototype);
-  KeyboardNav.prototype.constructor = KeyboardNav;
+        var self = this;
+        this.id = id;
+        this.params = params;
+        var str = self.params.textField;
+        str = $(str).text();
+        var nodeIndex;
+        var clickedLetters = [];
+        var correctAnswers = [];
+        var wrongAnswers = [];
+        var index = [];
+        var input = [];
+        var wrong = 0;
+        var correct = 0;
+        var max;
+        var defaults = {
+            image: null,
+            question: "No question text provided",
+            answers: [{
+                tipsAndFeedback: {
+                    tip: '',
+                    chosenFeedback: '',
+                    notChosenFeedback: ''
+                },
+                text: "Answer 1",
+                correct: true
+            }],
+            overallFeedback: [],
+            weight: 1,
+            userAnswers: [],
+            UI: {
+                checkAnswerButton: 'Check',
+                showSolutionButton: 'Show solution',
+                tryAgainButton: 'Try again',
+                scoreBarLabel: 'You got :num out of :total points'
+            }
+        };
 
-  /**
-   * Adds a new element to navigation
-   *
-   * @param {HTMLElement} el The element
-   * @public
-   */
-  KeyboardNav.prototype.addElement = function(el){
-    el.addEventListener('keydown', this.handleKeyDown.bind(this));
-    el.addEventListener('click', this.onClick.bind(this));
+        var checkAnswer = function($container, $ul, $li, correctAnswers, wrongAnswers, clickedLetters, $checkButtonContainer, index) {
+            max = index.length;
+            console.log(correctAnswers);
+            console.log(wrongAnswers);
+            console.log(clickedLetters);
+            $checkButtonContainer.hide();
+            var top;
 
-    // add to array to navigate over
-    this.elements.push(el);
+            var scorePoints = new H5P.Question.ScorePoints();
 
-    if(this.elements.length === 1){ // if first
-      this.setTabbableAt(0);
+            $("li").each(function(el) {
+
+                for (j = 0; j < correctAnswers.length; j++) {
+                    if (el == correctAnswers[j]) {
+                        $(this).attr("aria-describedby", "h5p-description-correct");
+                        $(this).append(scorePoints.getElement(true));
+                        correct++;
+                    }
+                }
+                for (j = 0; j < wrongAnswers.length; j++) {
+                    if (el == wrongAnswers[j]) {
+                        $(this).attr("aria-describedby", "h5p-description-incorrect");
+                        $(this).append(scorePoints.getElement(false));
+                        wrong++;
+                    }
+                }
+
+
+
+            });
+
+            if (correct >= wrong) {
+                var score = (correct - wrong);
+            } else {
+                score = 0;
+            }
+            // var $feedbackContainer = $('<div class=feedback-container></div>').appendTo($container);
+            var $buttonContainer = $('<div class="button-container"></div>').appendTo($container);
+            var ratio = (score / max);
+            var feedback = H5P.Question.determineOverallFeedback(self.params.overallFeedback, ratio);
+            feedback = feedback.charAt(0).toUpperCase() + feedback.substr(1).toLowerCase();
+            feedback.replace('@score', score).replace('@total', max);
+            var $feedbackDialog = $('' +
+                '<div class="h5p-feedback-dialog">' +
+                '<div class="h5p-feedback-inner">' +
+                '<div class="h5p-feedback-text" aria-hidden="true">' + feedback + '</div>' +
+                '</div>' +
+                '</div><br />').appendTo($buttonContainer);
+
+            self.setFeedback(feedback, score, max, self.params.scoreBarLabel);
+            self.$progressBar = UI.createScoreBar(max, self.params.scoreBarLabel);
+            self.$progressBar.setScore(score);
+            self.$progressBar.appendTo($buttonContainer);
+
+            self.$retry = UI.createButton({
+                title: 'Retry Button',
+                'text': self.params.tryAgainButton,
+                'class': 'retry h5p-question-try-again h5p-joubelui-button',
+                click: function() {
+                    $container.empty();
+                    score = 0;
+                    wrong = 0;
+                    correct = 0;
+                    clickedLetters.length = 0;
+                    wrongAnswers.length = 0;
+                    correctAnswers.length = 0;
+                    self.attach($container);
+                },
+            });
+            self.$showSolution = UI.createButton({
+                title: 'Show Solution Button',
+                'text': self.params.showSolutionButton,
+                'class': 'show-solution h5p-question-show-solution h5p-joubelui-button',
+                click: function() {
+                    $(".h5p-question-plus-one").hide();
+                    $(".h5p-question-minus-one").hide();
+                    $(this).hide();
+
+                    $("li").each(function(el) {
+                        for (i = 0; i < index.length; i++) {
+                            if ($(this).attr("data-id") == index[i]) {
+                                if (!$(this).attr("aria-describedby")) {
+                                    $(this).attr("aria-describedby", "h5p-description-missed");
+                                }
+                            }
+                        }
+                    });
+                },
+            });
+
+            if (clickedLetters.length > 0) {
+                if (correctAnswers.length === 0) {
+                    console.log("incorrect");
+                    self.$retry.appendTo($buttonContainer);
+                    self.$showSolution.appendTo($buttonContainer);
+                }
+                if (wrongAnswers.length === 0) {
+                    console.log("correct");
+                    if (correctAnswers.length != index.length) {
+                        self.$retry.appendTo($buttonContainer);
+                        self.$showSolution.appendTo($buttonContainer);
+                    }
+                }
+                if (correctAnswers.length > 0 && wrongAnswers.length > 0) {
+                    console.log("mixed");
+                    if (correctAnswers.length == index.length) {
+                        self.$retry.appendTo($buttonContainer);
+                    } else {
+                        self.$retry.appendTo($buttonContainer);
+                        self.$showSolution.appendTo($buttonContainer);
+                    }
+                }
+            } else {
+                self.$retry.appendTo($buttonContainer);
+                self.$showSolution.appendTo($buttonContainer);
+            }
+        }
+
+        self.attach = function($container) {
+            $container.addClass("h5p-mark-the-letters");
+
+            $container.append('<div class="task-description">'+( self.params.question) + '</div>');
+            var answer = self.params.solution;
+
+            if (self.params.addSolution == "false") {
+                input = [];
+                index = [];
+                input = str.match(/(\*.\*)/g);
+                str = str.replace(/\*\*/g, '*');
+                str = str.replace(/(\*)/g, "");
+                for (i = 0; i < input.length; i++) {
+                    input[i] = input[i].replace(/(\*)/g, "");
+                    // index.push(str.indexOf(input[i]));
+                    var res = str.split(answer[i]);
+                    var a = res.join("*" + answer[i] + "*");
+                    str = a;
+                }
+            } else {
+                answer = answer.replace(/\,/g, "");
+                str = str.replace(/\*\*/g, '*');
+                str = str.replace(/(\*)/g, "");
+                if ($(answer).val() !== null) {
+                    for (i = 0; i < answer.length; i++) {
+                        var res = str.split(answer[i]);
+                        var a = res.join("*" + answer[i] + "*");
+                        str = a;
+                    }
+                }
+
+                input = [];
+                var correctInput = [];
+                input = str.match(/(\*.\*)/g);
+                str = str.replace(/\*\*/g, '*');
+                str = str.replace(/(\*)/g, "");
+
+                for (i = 0; i < input.length; i++) {
+                    input[i] = input[i].replace(/(\*)/g, "");
+                }
+                for (i = 0; i < str.length; i++) {
+                    for (j = 0; j < input.length; j++) {
+                        if (str[i] === input[j]) {
+                            correctInput.push(i);
+                        }
+                    }
+                }
+
+                index = [];
+                $.each(correctInput, function(i, el) {
+                    if ($.inArray(el, index) === -1) index.push(el);
+                });
+            }
+
+            console.log(input);
+            console.log(index);
+            var $ul = $('<ul class="list"></ul>').appendTo($container);
+            for (i = 0; i < str.length; i++) {
+
+                var node = str[i];
+                nodeIndex = i;
+                $(this).data('id', nodeIndex);
+                var $li = $('<li id="li-class" data-id="' + nodeIndex + '">' + node + '</li>').appendTo($ul);
+
+                var $current = $("li").first().attr("tabindex", 0);
+                if (str.charCodeAt(i) !== 32) {
+                    if (str.charCodeAt(i) !== 44) {
+                        if (str.charCodeAt(i) !== 46) {
+                            $li.attr("role","option");
+                        }
+                    }
+                }
+                else {
+                  $li.addClass("special-char");
+                }
+
+                var clkCount = 0;
+                var keyCount = 0;
+                $li.click(function() {
+                  // prompt("enter something");
+                        clkCount++;
+                        if(!$(this).hasClass("special-char")){
+                          $(this).toggleClass("selected");
+                          $(this).removeClass("new-li");
+                        }
+                        var x = $(this).data('id');
+                        if($(this).hasClass("selected")){
+
+                          clickedLetters.push(x);
+                          for (k = 0; k < index.length; k++) {
+                              if (index[k] === x) {
+                                  flag = 1;
+                                  correctAnswers.push(x);
+                              }
+                          }
+                          wrongAnswers = $.grep(clickedLetters, function(value) {
+                              return $.inArray(value, correctAnswers) < 0;
+                          });
+                          // console.log("wrk");
+                        }
+                        else{
+
+                          if(clickedLetters.includes(x)){
+                             clickedLetters.pop(x);
+                             correctAnswers.pop(x);
+                          }
+                        }
+
+                    })
+                    .keydown(function(event) {
+                      if($(this).hasClass("special-char")){
+                        $(this).attr("tabindex",-1);
+                      }
+                        switch (event.which) {
+                            case 13: // Enter
+                            case 32: // Space;
+                              // keyCount++;
+                              if (!$(this).hasClass("special-char")) {
+                                  $(this).toggleClass("selected");
+                                  $(this).removeClass("new-li");
+                                  var x = $(this).data('id');
+                                  if($(this).hasClass("selected")){
+                                    clickedLetters.push(x);
+                                    for (k = 0; k < index.length; k++) {
+                                        if (index[k] === x) {
+                                            flag = 1;
+                                            correctAnswers.push(x);
+                                        }
+                                    }
+                                    wrongAnswers = $.grep(clickedLetters, function(value) {
+                                        return $.inArray(value, correctAnswers) < 0;
+                                    });
+                                  }
+                                }
+                                break;
+                            case 37: // Left Arrow
+                            case 38: // Up Arrow
+                                // Go to previous dot
+                                $(this).attr('tabindex', '-1');
+                                $current = $(this).prev();
+                                $current.attr('tabindex', 0).focus();
+                                console.log($current);
+                                break;
+
+                            case 39: // Right Arrow
+                            case 40: // Down Arrow
+                                // Go to next dot
+                                $(this).attr('tabindex', '-1');
+                                $current = $(this).next();
+                                $current.attr('tabindex', 0).focus();
+                                console.log($current);
+                                break;
+                        }
+                    });
+
+
+            }
+            console.log(answer);
+
+            var $checkButtonContainer = $('<div class="button-container" />').appendTo($container);
+            self.$checkAnswer = UI.createButton({
+                title: 'Button',
+                'class': 'check-answer h5p-question-check-answer h5p-joubelui-button',
+                'text': self.params.checkAnswerButton,
+                click: function() {
+                    $(this).attr("disabled", true);
+                    $("li").attr("disabled", true);
+                    $("li").removeAttr('class');
+                    $("li").off("click");
+                    $("li").attr("tabindex","-1");
+                    checkAnswer($container, $ul, $li, correctAnswers, wrongAnswers, clickedLetters, $checkButtonContainer, index);
+                },
+            }).appendTo($checkButtonContainer);
+        }
+        self.trigger('resize');
     }
-  };
+    MarkTheLetters.prototype = Object.create(H5P.EventDispatcher.prototype);
+    MarkTheLetters.prototype.constructor = MarkTheLetters;
+    return MarkTheLetters;
 
-  /**
-   * Select the previous element in the list. Select the last element,
-   * if the current element is the first element in the list.
-   *
-   * @param {Number} index The index of currently selected element
-   * @public
-   * @fires KeyboardNav#previousOption
-   */
-  KeyboardNav.prototype.previousOption = function (index) {
-    var isFirstElement = index === 0;
-    this.focusOnElementAt(isFirstElement ? (this.elements.length - 1) : (index - 1));
-
-    /**
-     * Previous option event
-     *
-     * @event KeyboardNav#previousOption
-     * @type KeyboardNavigationEventData
-     */
-    this.trigger('previousOption', this.createEventPayload(index));
-  };
-
-
-  /**
-   * Select the next element in the list. Select the first element,
-   * if the current element is the first element in the list.
-   *
-   * @param {Number} index The index of the currently selected element
-   * @public
-   * @fires KeyboardNav#previousOption
-   */
-  KeyboardNav.prototype.nextOption = function (index) {
-    var isLastElement = index === this.elements.length - 1;
-    this.focusOnElementAt(isLastElement ? 0 : (index + 1));
-
-    /**
-     * Previous option event
-     *
-     * @event KeyboardNav#nextOption
-     * @type KeyboardNavigationEventData
-     */
-    this.trigger('nextOption', this.createEventPayload(index));
-  };
-
-  /**
-   * Focus on an element by index
-   *
-   * @param {Number} index The index of the element to focus on
-   * @public
-   */
-  KeyboardNav.prototype.focusOnElementAt = function (index) {
-    this.setTabbableAt(index);
-    this.elements[index].focus();
-  };
-
-  /**
-   * Disable possibility to select a word trough click and space or enter
-   *
-   * @public
-   */
-  KeyboardNav.prototype.disableSelectability = function () {
-    this.selectability = false;
-  };
-
-  /**
-   * Enable possibility to select a word trough click and space or enter
-   *
-   * @public
-   */
-  KeyboardNav.prototype.enableSelectability = function () {
-    this.selectability = true;
-  };
-
-  /**
-   * Sets tabbable on a single element in the list, by index
-   * Also removes tabbable from all other elements in the list
-   *
-   * @param {Number} index The index of the element to set tabbale on
-   * @public
-   */
-  KeyboardNav.prototype.setTabbableAt = function (index) {
-    this.removeAllTabbable();
-    this.elements[index].setAttribute('tabindex', '0');
-  };
-
-  /**
-   * Remove tabbable from all entries
-   *
-   * @public
-   */
-  KeyboardNav.prototype.removeAllTabbable = function () {
-    this.elements.forEach(function(el){
-      el.removeAttribute('tabindex');
-    });
-  };
-
-  /**
-   * Toggles 'aria-selected' on an element, if selectability == true
-   *
-   * @param {EventTarget|HTMLElement} el The element to select/unselect
-   * @private
-   * @fires KeyboardNav#select
-   */
-  KeyboardNav.prototype.toggleSelect = function(el){
-    if(this.selectability) {
-
-      // toggle selection
-      if (isElementSelected(el)) {
-        el.removeAttribute('aria-selected');
-      }
-      else {
-        el.setAttribute('aria-selected', 'true');
-      }
-
-      // focus current
-      el.setAttribute('tabindex', '0');
-      el.focus();
-
-      var index = this.elements.indexOf(el);
-
-      /**
-       * Previous option event
-       *
-       * @event KeyboardNav#select
-       * @type KeyboardNavigationEventData
-       */
-      this.trigger('select', this.createEventPayload(index));
-    }
-  };
-
-  /**
-   * Handles key down
-   *
-   * @param {KeyboardEvent} event Keyboard event
-   * @private
-   */
-  KeyboardNav.prototype.handleKeyDown = function(event){
-    var index;
-
-    switch (event.which) {
-      case 13: // Enter
-      case 32: // Space
-        // Select
-        this.toggleSelect(event.target);
-        event.preventDefault();
-        break;
-
-      case 37: // Left Arrow
-      case 38: // Up Arrow
-        // Go to previous Option
-        index = this.elements.indexOf(event.currentTarget);
-        this.previousOption(index);
-        event.preventDefault();
-        break;
-
-      case 39: // Right Arrow
-      case 40: // Down Arrow
-        // Go to next Option
-        index = this.elements.indexOf(event.currentTarget);
-        this.nextOption(index);
-        event.preventDefault();
-        break;
-    }
-  };
-
-  /**
-   * Handles element click. Toggles 'aria-selected' on element
-   *
-   * @param {MouseEvent} event Mouse click event
-   * @private
-   */
-  KeyboardNav.prototype.onClick = function(event){
-    this.toggleSelect(event.currentTarget);
-  };
-
-  /**
-   * Creates a paylod for event that is fired
-   *
-   * @param {Number} index
-   * @return {KeyboardNavigationEventData}
-   */
-  KeyboardNav.prototype.createEventPayload = function(index){
-    /**
-     * Data that is passed along as the event parameter
-     *
-     * @typedef {Object} KeyboardNavigationEventData
-     * @property {HTMLElement} element
-     * @property {number} index
-     * @property {boolean} selected
-     */
-    return {
-      element: this.elements[index],
-      index: index,
-      selected: isElementSelected(this.elements[index])
-    };
-  };
-
-  /**
-   * Sets aria-selected="true" on an element
-   *
-   * @param {HTMLElement} el The element to set selected
-   * @return {boolean}
-   */
-  var isElementSelected = function(el){
-    return el.getAttribute('aria-selected') === 'true';
-  };
-
-  return KeyboardNav;
-})(H5P.EventDispatcher);
+})(H5P.jQuery, H5P.Question, H5P.JoubelUI);

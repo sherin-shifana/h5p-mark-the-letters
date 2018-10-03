@@ -1,91 +1,63 @@
 .h5p-mark-the-letters{
 	text-align:center;
 	font-family: sans-serif;
-  /* background: #1394c7;
-  color: #fff; */
-  /* font-size: 18px; */
   height: 100%;
   min-height: 200px;
 	width: 100%;
 	vertical-align: middle;
 	font-size: 16px;
-line-height: 1.5em;
+	line-height: 1.5em;
 }
+
 .task-description{
 	font-size: 22px;
 	text-transform: capitalize;
 	display: inline-block;
 }
-li {
-	display: inline;
-	width: 10px;
-	height: 16px;
-	/* margin: 3px; */
-	line-height: 3;
-}
+
 ul{
 	text-align: justify;
 	margin: 0 auto;
 	width: 75%;
 }
-[aria-selected="true"]{
 
-	color: black;
-	border: 1px dotted grey;
-	border-radius: 5px;
-	background: #cee0f4;
-	font-size: 1.2em;
-	text-align: center;
-	padding: 2px;
-	display: inline-block;
-	line-height: 1;
-	/* text-decoration-color: blue; */
-	/* width:50px;
-     height: 30px; */
-	margin: 1px;
-	/* outline: none;
-	white-space: nowrap; */
-	width: 1em;
+li {
+	display: inline;
+	width: 10px;
+	height: 16px;
+	line-height: 3;
 }
-.unselectable {
-    -moz-user-select: -moz-none;
-    -khtml-user-select: none;
-    -webkit-user-select: none;
-    -o-user-select: none;
-    user-select: none;
-}
-.new-li:hover {
-	color: black;
-	border: 1px solid lightblue;
-	border-radius: 5px;
+
+[role="option"]{
+	white-space: nowrap;
+	padding: 0.1em;
+	border-radius: 0.25em;
 	cursor: pointer;
-	font-size: 1.2em;
-	text-align: center;
-	text-decoration-color: blue;
-	/* margin: 3px;
-	outline: none; */
+	position: relative;
 }
 
-.div-alpha {
+[role="option"]:hover{
+	box-shadow: inset 0px 0px 0px 2px #cee0f4;
+}
+.selected {
 	color: black;
 	border: 1px dotted grey;
 	border-radius: 3px;
 	background: #cee0f4;
 	cursor: pointer;
-	/* font-size: 1.2em; */
 	text-align: center;
 	padding: 2px;
 	display: inline-block;
 	line-height: 1;
-	/* text-decoration-color: blue; */
-	/* width:50px;
-     height: 30px; */
 	margin: 1px;
 	outline: none;
 	white-space: nowrap;
 	width: 1em;
 }
 
+/* .selected:hover{
+
+} */
 .paragraph-container {
 	font-size: 1em;
 	font-weight: normal;
@@ -180,12 +152,12 @@ ul{
 
 
 
-.h5p-question-plus-one,
+/* .h5p-question-plus-one,
 .h5p-question-minus-one {
 	right: unset;
 	top: unset;
 
-}
+} */
 
 .h5p-feedback-dialog {
 	position: relative;

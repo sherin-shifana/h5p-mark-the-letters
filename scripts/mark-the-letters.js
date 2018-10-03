@@ -10,8 +10,6 @@ H5P.MarkTheLetters = (function($, Question, UI) {
         this.params = params;
         var str = self.params.textField;
         str = $(str).text();
-        var str1 = str;
-        var flag = 0;
         var nodeIndex;
         var clickedLetters = [];
         var correctAnswers = [];
@@ -55,19 +53,11 @@ H5P.MarkTheLetters = (function($, Question, UI) {
             var scorePoints = new H5P.Question.ScorePoints();
 
             $("li").each(function(el) {
-                // var $el = $('<div class="h5p-mark-the-words-descriptions"></div>');
+
                 for (j = 0; j < correctAnswers.length; j++) {
                     if (el == correctAnswers[j]) {
                         $(this).attr("aria-describedby", "h5p-description-correct");
                         $(this).append(scorePoints.getElement(true));
-                        var offset = $(this).offset();
-                        var height = $(this).height();
-                        var width = $(this).width();
-                        var outerWidth = $(this).outerWidth();
-                        var offRight = $(window).width() - offset.left;
-                        var top = (offset.top - (height*1.3-3))/16 + "em";
-                        var right = (offRight - (width*1.8))/16 +"em";
-                        $(this).children().css('top',top).css('right',right);
                         correct++;
                     }
                 }
@@ -75,14 +65,6 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                     if (el == wrongAnswers[j]) {
                         $(this).attr("aria-describedby", "h5p-description-incorrect");
                         $(this).append(scorePoints.getElement(false));
-                        offset = $(this).offset();
-                        height = $(this).height();
-                        width = $(this).width();
-                        outerWidth = $(this).outerWidth();
-                        offRight = $(window).width() - offset.left;
-                        top = (offset.top - (height*1.3-3))/16 + "em";
-                        right = (offRight - (width*1.8))/16 +"em";
-                        $(this).children().css('top',top).css('right',right);
                         wrong++;
                     }
                 }
@@ -183,6 +165,7 @@ H5P.MarkTheLetters = (function($, Question, UI) {
 
             $container.append('<div class="task-description">'+( self.params.question) + '</div>');
             var answer = self.params.solution;
+
             if (self.params.addSolution == "false") {
                 input = [];
                 index = [];
@@ -245,28 +228,26 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                 if (str.charCodeAt(i) !== 32) {
                     if (str.charCodeAt(i) !== 44) {
                         if (str.charCodeAt(i) !== 46) {
-                            $li.addClass("new-li");
+                            $li.attr("role","option");
                         }
                     }
                 }
                 else {
                   $li.addClass("special-char");
                 }
-                $li.find("special-char").off("click");
+
                 var clkCount = 0;
                 var keyCount = 0;
                 $li.click(function() {
                   // prompt("enter something");
-
                         clkCount++;
-                        $(this).attr("role","option");
-                        // if(!$(this).hasClass("special-char")){
-                          $(this).toggleClass("div-alpha");
+                        if(!$(this).hasClass("special-char")){
+                          $(this).toggleClass("selected");
                           $(this).removeClass("new-li");
-                          var x = $(this).data('id');
+                        }
+                        var x = $(this).data('id');
+                        if($(this).hasClass("selected")){
 
-                        // }
-                        if($(this).hasClass("div-alpha")){
                           clickedLetters.push(x);
                           for (k = 0; k < index.length; k++) {
                               if (index[k] === x) {
@@ -297,10 +278,10 @@ H5P.MarkTheLetters = (function($, Question, UI) {
                             case 32: // Space;
                               // keyCount++;
                               if (!$(this).hasClass("special-char")) {
-                                  $(this).toggleClass("div-alpha");
+                                  $(this).toggleClass("selected");
                                   $(this).removeClass("new-li");
                                   var x = $(this).data('id');
-                                  if($(this).hasClass("div-alpha")){
+                                  if($(this).hasClass("selected")){
                                     clickedLetters.push(x);
                                     for (k = 0; k < index.length; k++) {
                                         if (index[k] === x) {
