@@ -7,6 +7,9 @@
 	vertical-align: middle;
 	font-size: 16px;
 	line-height: 1.5em;
+	position: relative;
+	overflow: hidden;
+
 }
 
 .task-description{
@@ -15,18 +18,18 @@
 	display: inline-block;
 }
 
-ul{
+.list{
 	text-align: justify;
 	margin: 0 auto;
 	width: 75%;
 }
 
-li {
+/* ul:not(.h5p-actions) li{
 	display: inline;
 	width: 10px;
 	height: 16px;
 	line-height: 3;
-}
+} */
 
 [role="option"]{
 	white-space: nowrap;
@@ -36,10 +39,11 @@ li {
 	position: relative;
 }
 
-[role="option"]:hover{
+.h5p-mark-the-letters:not(.hover-h5p) [role="option"]:hover{
 	box-shadow: inset 0px 0px 0px 2px #cee0f4;
 }
-.selected {
+
+.selected{
 	color: black;
 	border: 1px dotted grey;
 	border-radius: 3px;
@@ -55,15 +59,11 @@ li {
 	width: 1em;
 }
 
-/* .selected:hover{
-
-} */
-.paragraph-container {
-	font-size: 1em;
-	font-weight: normal;
-	padding: 0;
-	margin: 0 0 1em;
-	line-height: inherit;
+li{
+	display: inline;
+	width: 10px;
+	height: 16px;
+	line-height: 3;
 }
 
 .h5p-question-check-answer .h5p-joubelui-button {
@@ -136,7 +136,7 @@ li {
 [aria-describedby="h5p-description-missed"] {
 	background-color: #E4F4EC;
 	color: black;
-	border: 1px dotted grey;
+	border: 0.1em #77b395 dotted;
 	border-radius: 3px;
 	cursor: pointer;
 	/* font-size: 1.2em; */
