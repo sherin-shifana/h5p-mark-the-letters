@@ -148,6 +148,42 @@
     "common": true
   },
   {
+    "label": "Correct answer text",
+    "importance": "low",
+    "name": "correctAnswer",
+    "type": "text",
+    "default": "Correct!",
+    "description": "Text used to indicate that an answer is correct",
+    "common": true
+  },
+  {
+    "label": "Incorrect answer text",
+    "importance": "low",
+    "name": "incorrectAnswer",
+    "type": "text",
+    "default": "Incorrect!",
+    "description": "Text used to indicate that an answer is incorrect",
+    "common": true
+  },
+  {
+    "label": "Missed answer text",
+    "importance": "low",
+    "name": "missedAnswer",
+    "type": "text",
+    "default": "Missed!",
+    "description": "Text used to indicate that an answer is missing",
+    "common": true
+  },
+  {
+    "label": "Description for Display Solution",
+    "importance": "low",
+    "name": "displaySolutionDescription",
+    "type": "text",
+    "default": "Task is updated to contain the solution.",
+    "description": "This text tells the user that the tasks has been updated with the solution.",
+    "common": true
+  },
+  {
     "name": "scoreBarLabel",
     "type": "text",
     "label": "Textual representation of the score bar for those using a readspeaker",
