@@ -5,12 +5,14 @@
   background: rgba(255, 255, 255, 0.9);
   filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#e6FFFFFF,endColorstr=#e6FFFFFF);
   overflow: hidden;
-  text-align: center;
+  /* text-align: center; */
 }
 
-.h5p-mark-the-letters .task-description{
+.h5p-mark-the-letters .h5p-task-description{
   font-size: 1.25em;
   text-transform: capitalize;
+  font-weight: 500;
+
 }
 
 /* Actual text paragraphs */
@@ -20,13 +22,14 @@
   padding: 0;
   margin: 0 0 1em;
   text-align: justify;
+  /* color: #192538; */
 }
 
 /* Selectable letters container */
 .h5p-mark-the-letters .h5p-letter-selectable-letters {
   line-height: 1.75em;
   outline: none;
-  line-height: 2.5;
+  line-height: 3;
 }
 
 /* Selectable letters*/
