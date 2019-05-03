@@ -27,7 +27,6 @@ H5P.MarkTheLetters.XapiGenerator = (function ($) {
         true,
         MarkTheLetters.score === MarkTheLetters.max
       );
-      console.log(MarkTheLetters.score, MarkTheLetters.max);
       // Extend user result
       var userResult = {
         response: getUserSelections(MarkTheLetters)
@@ -48,7 +47,7 @@ H5P.MarkTheLetters.XapiGenerator = (function ($) {
   function createDefinition(MarkTheLetters) {
     var definition = {};
     definition.description = {
-      'en-US': replaceLineBreaks(MarkTheLetters.params.taskDescription)
+      'en-US': replaceLineBreaks(MarkTheLetters.params.question)
     };
     definition.type = 'http://adlnet.gov/expapi/activities/cmi.interaction';
     definition.interactionType = 'choice';

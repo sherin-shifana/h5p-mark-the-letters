@@ -1,11 +1,11 @@
 /*global H5P*/
 
 /**
- * Mark The Words module
+ * Mark The Letters module
  * @external {jQuery} $ H5P.jQuery
  * @external {UI} UI H5P.JoubelUI
  */
-H5P.MarkTheLetters = (function ($, UI, Letter, XapiGenerator) {
+H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
   /**
    * Initialize module.
    *
@@ -16,15 +16,20 @@ H5P.MarkTheLetters = (function ($, UI, Letter, XapiGenerator) {
    * @returns {Object} MarkTheLetters Mark the letters instance
    */
 
-  function MarkTheLetters(params, contentId) {
+  function MarkTheLetters(params, contentId, contentData) {
     //constructor
     this.params = params;
     this.contentId = contentId;
+    this.contentData = contentData;
+    this.introductionId = 'mark-the-letters-introduction-' + contentId;
+    Question.call(this, 'mark-the-letters');
     this.$inner = $('<div class="h5p-letter-inner"></div>');
+    this.addTaskTo(this.$inner);
     this.XapiGenerator = new MarkTheLetters.XapiGenerator(this);
   }
 
   MarkTheLetters.prototype = Object.create(H5P.EventDispatcher.prototype);
+  MarkTheLetters.prototype = Object.create(H5P.Question.prototype);
   MarkTheLetters.prototype.constructor = MarkTheLetters;
 
   /**
@@ -54,7 +59,7 @@ H5P.MarkTheLetters = (function ($, UI, Letter, XapiGenerator) {
               html += '<span role="option">' + entry + '</span>';
             }
 
-            // Add space after every word.
+            // Add space after every letter.
             else if ($(html).text()) {
               html += ' ';
             }
@@ -76,18 +81,17 @@ H5P.MarkTheLetters = (function ($, UI, Letter, XapiGenerator) {
    * Handle task and add it to container.
    * @param {jQuery} $container The object which our task will attach to.
    */
-  MarkTheLetters.prototype.attach = function ($container) {
+  MarkTheLetters.prototype.addTaskTo = function ($container) {
     $container.addClass("h5p-mark-the-letters");
     var that = this;
     // Task description
-    var $questionContainer = $('<div class="task-description">' + (that.params.question) + '</div>');
-    $questionContainer.attr('tabindex',0);
     that.selectableLetters = [];
     that.answers = 0;
 
     // Wrapper
     var $letterContainer = $('<div/>', {
       'class': 'h5p-letter-selectable-letters',
+      'aria-labelledby': that.introductionId,
       'aria-multiselect': true,
       'role': 'listbox',
       html: that.createHtmlForLetters($.parseHTML(that.params.textField))
@@ -97,7 +101,7 @@ H5P.MarkTheLetters = (function ($, UI, Letter, XapiGenerator) {
       /**
       * Initialize the letter to be used in the task
       */
-      var selectableLetter = new MarkTheLetters.Letter($(this), that.params.addSolution==='true', that.params.solution);
+      var selectableLetter = new MarkTheLetters.Letter($(this), that.params.addSolution, that.params.solution);
 
       if (selectableLetter.isAnswer()) {
         that.answers += 1;
@@ -112,6 +116,7 @@ H5P.MarkTheLetters = (function ($, UI, Letter, XapiGenerator) {
       // on letter clicked
       $(this).click(function () {
         clkCount++;
+        // $(this).toggle();
         that.onClickSelectables(selectableLetter, clkCount);
         that.triggerXAPI('interacted');
       })
@@ -129,7 +134,12 @@ H5P.MarkTheLetters = (function ($, UI, Letter, XapiGenerator) {
             case 38: // Up Arrow
               // Go to previous dot
               $(this).attr('tabindex', '-1');
-              $current = $(this).prev();
+              if ($(this).prev().index() != -1) {
+                $current = $(this).prev();
+              }
+              else {
+                $current = $letterContainer.find('[role="option"]').last();
+              }
               $current.attr('tabindex', 0).focus();
               break;
 
@@ -137,21 +147,24 @@ H5P.MarkTheLetters = (function ($, UI, Letter, XapiGenerator) {
             case 40: // Down Arrow
               // Go to next dot
               $(this).attr('tabindex', '-1');
-              $current = $(this).next();
+              if ($(this).next().index() !== -1) {
+                $current = $(this).next();
+              }
+              else {
+                $current = $letterContainer.find('[role="option"]').first();
+              }
               $current.attr('tabindex', 0).focus();
               break;
           }
         });
     });
 
+
     /**
     * Attach dom elements to the container.
     */
-    $letterContainer.appendTo(that.$inner);
-    $questionContainer.appendTo($container);
-    that.$inner.appendTo($container);
+    $letterContainer.appendTo($container);
     that.$letterContainer = $letterContainer;
-    that.addButtons($container);
     /**
     * Resize event
     *
@@ -173,52 +186,66 @@ H5P.MarkTheLetters = (function ($, UI, Letter, XapiGenerator) {
   /**
   * Add check answer, show solution, and retry buttons.
   */
-  MarkTheLetters.prototype.addButtons = function ($container) {
+  MarkTheLetters.prototype.addButtons = function () {
     var that = this;
-    that.$buttonContainer = $('</br /><div/>', {
+    that.$buttonContainer = $('<div/>', {
       'class': 'h5p-button-bar'
     });
-    that.$feedbackContainer = $('<div/>', {
-      'class': 'h5p-feedback-container'
-    });
-    // Check answer button
-    that.$checkButton = UI.createButton({
-      title: 'Button',
-      'class': 'check-answer h5p-question-check-answer h5p-joubelui-button',
-      'text': that.params.checkAnswerButton,
-      click: function () {
-        that.checkAnswer();
-      },
-    });
 
-    // Retry button
-    that.$retry = UI.createButton({
-      title: 'Retry Button',
-      'text': that.params.tryAgainButton,
-      'class': 'retry h5p-question-try-again h5p-joubelui-button',
-      click: function () {
-        that.resetTask($container);
-      },
-    });
+    if (that.params.behaviour.enableCheckButton) {
+      this.addButton('check-answer', that.params.checkAnswerButton, function () {
+        that.isAnswered = true;
+        var answers = that.calculateScore();
+        that.feedbackSelectedLetters();
 
-    // Show solution button
-    that.$showSolution = UI.createButton({
-      title: 'Show Solution Button',
-      'text': that.params.showSolutionButton,
-      'class': 'show-solution h5p-question-show-solution h5p-joubelui-button',
-      click: function () {
-        that.showSolutions();
-      },
-    });
+        if (!that.showEvaluation(answers)) {
+          // Only show if a correct answer was not found.
+          if (that.params.behaviour.enableSolutionsButton && (answers.correct < that.answers)) {
+            that.showButton('show-solution');
+          }
+          if (that.params.behaviour.enableRetry) {
+            that.showButton('try-again');
+          }
+        }
+        that.hideButton('check-answer');
+        that.trigger(that.XapiGenerator.generateAnsweredEvent());
+      });
+    }
 
-    // Attach the buttons to the container
-    that.$feedbackContainer.appendTo(that.$buttonContainer);
-    that.$checkButton.appendTo(that.$buttonContainer);
-    that.$retry.appendTo(that.$buttonContainer);
-    that.$showSolution.appendTo(that.$buttonContainer);
-    that.$retry.hide();
-    that.$showSolution.hide();
-    that.$buttonContainer.appendTo($container);
+    this.addButton('try-again', this.params.tryAgainButton, this.resetTask.bind(this), false);
+
+    this.addButton('show-solution', this.params.showSolutionButton, function () {
+      that.setAllMarks();
+
+      if (that.params.behaviour.enableRetry) {
+        that.showButton('try-again');
+      }
+      that.hideButton('check-answer');
+      that.hideButton('show-solution');
+
+      that.read(that.params.displaySolutionDescription);
+    }, false);
+  };
+
+  /**
+   * Clear the evaluation text.
+   *
+   * @fires MarkTheLetters#resize
+   */
+  MarkTheLetters.prototype.hideEvaluation = function () {
+    this.removeFeedback();
+    this.trigger('resize');
+  };
+
+  // When retry button is clicked
+  MarkTheLetters.prototype.resetTask = function () {
+    // Reset task
+    this.isAnswered = false;
+    this.clearAllMarks();
+    this.hideEvaluation();
+    this.hideButton('try-again');
+    this.hideButton('show-solution');
+    this.showButton('check-answer');
     /**
     * Resize event
     *
@@ -227,91 +254,58 @@ H5P.MarkTheLetters = (function ($, UI, Letter, XapiGenerator) {
     this.trigger('resize');
   };
 
-  // When check answer button is clicked
-  MarkTheLetters.prototype.checkAnswer = function () {
-    var that = this;
-    that.isAnswered = true;
-    var answers = that.calculateScore();
-    this.score = answers.score;
-    this.max = this.answers;
-    this.$letterContainer.addClass('h5p-disable-hover');
-    this.$letterContainer.attr("tabindex", "-1");
+  /**
+   * Clear styling on marked letters.
+   *
+   * @fires MarkTheLetters#resize
+   */
+  MarkTheLetters.prototype.clearAllMarks = function () {
+    this.selectableLetters.forEach(function (entry) {
+      entry.markClear();
+    });
+
+    this.$letterContainer.removeClass('h5p-disable-hover');
+    this.trigger('resize');
+  };
+
+  /**
+   * Mark the selected letters as correct or wrong.
+   *
+   * @fires MarkTheLetters#resize
+   */
+  MarkTheLetters.prototype.feedbackSelectedLetters = function () {
     var scorePoints = new H5P.Question.ScorePoints();
+
     this.selectableLetters.forEach(function (entry) {
       if (entry.isSelected()) {
         entry.markCheck(scorePoints);
       }
-      $(this).attr('disabled', true);
-      $(this).off("click");
     });
 
-    /**
-    * Add feedback when check button is clicked.
-    */
-    var scoreText = H5P.Question.determineOverallFeedback(this.params.overallFeedback, this.score / this.max).replace(/@score/g, this.score.toString())
-      .replace(/@total/g, this.answers.toString())
-      .replace(/@correct/g, answers.correct.toString())
-      .replace(/@wrong/g, answers.wrong.toString())
-      .replace(/@missed/g, answers.missed.toString());
-    var $feedbackDialog = $('' +
-                  '<div class="h5p-feedback-dialog">' +
-                  '<div class="h5p-feedback-inner">' +
-                  '<div class="h5p-feedback-text" aria-hidden="true">' + scoreText + '</div>' +
-                  '</div>' +
-                  '</div><br />');
-    that.$progressBar = UI.createScoreBar(this.answers, that.params.scoreBarLabel);
-    that.$progressBar.setScore(this.score);
-    that.$feedbackContainer.append($feedbackDialog);
-    that.$progressBar.appendTo(that.$feedbackContainer);
-    /**
-    * If not correct answers, then add retry and show solution button.
-    */
-    that.$retry.show();
-    if (answers.correct < that.answers) {
-      that.$showSolution.show();
-    }
-    that.$checkButton.hide();
-    that.$checkButton.attr('tabindex', '-1');
-    that.$feedbackContainer.attr('tabindex', '0');
-    that.$retry.attr('tabindex', 0).focus();
-    that.trigger(that.XapiGenerator.generateAnsweredEvent());
-  };
-
-  // When retry button is clicked
-  MarkTheLetters.prototype.resetTask = function ($container) {
-    var that = this;
-    // Reset task
-    $container.empty();
-    that.$inner.empty();
-    that.attach($container);
-    this.isAnswered = false;
-    this.selectableLetters.forEach(function (entry) {
-      entry.markClear();
-    });
-    this.$letterContainer.removeClass('h5p-disable-hover');
-    that.$retry.hide();
-    that.$showSolution.hide();
-    that.$checkButton.show();
-    that.$retry.attr('tabindex', '-1');
-    that.$checkButton.attr('tabindex', 0).focus();
-    /**
-    * Resize event
-    *
-    * @event MarkTheLetters#resize
-    */
+    this.$letterContainer.addClass('h5p-disable-hover');
     this.trigger('resize');
   };
 
-  // When show solution button is clicked
-  MarkTheLetters.prototype.showSolutions = function () {
-    var that = this;
-    that.setAllMarks();
-    that.$retry.show();
-    that.$showSolution.hide();
-    that.$checkButton.hide();
-    that.$showSolution.attr('tabindex',-1);
-    that.$retry.focus();
-    that.readspeaker(that.params.displaySolutionDescription);
+  /**
+   * Display the evaluation of the task, with proper markings.
+   *
+   * @fires MarkTheLetters#resize
+   */
+  MarkTheLetters.prototype.showEvaluation = function (answers) {
+    this.hideEvaluation();
+    this.score = answers.score;
+    this.max = this.answers;
+    //replace editor variables with values, uses regexp to replace all instances.
+    var scoreText = H5P.Question.determineOverallFeedback(this.params.overallFeedback, this.score / this.max).replace(/@score/g, this.score.toString())
+      .replace(/@total/g, this.max.toString())
+      .replace(/@correct/g, answers.correct.toString())
+      .replace(/@wrong/g, answers.wrong.toString())
+      .replace(/@missed/g, answers.missed.toString());
+
+    this.setFeedback(scoreText, this.score, this.max, this.params.scoreBarLabel);
+
+    this.trigger('resize');
+    return this.score === this.max;
   };
 
   /**
@@ -387,5 +381,21 @@ H5P.MarkTheLetters = (function ($, UI, Letter, XapiGenerator) {
     };
   };
 
+  MarkTheLetters.prototype.registerDomElements = function () {
+    // wrap introduction in div with id
+    var introduction = '<div class= "h5p-task-description" id="' + this.introductionId + '">' + this.params.question + '</div>';
+
+    // Register description
+    this.setIntroduction(introduction);
+
+    // Register content
+    this.setContent(this.$inner, {
+      'class': 'h5p-letter'
+    });
+
+    // Register buttons
+    this.addButtons();
+  };
+
   return MarkTheLetters;
-})(H5P.jQuery, H5P.JoubelUI, H5P.Letter, H5P.XapiGenerator);
+})(H5P.jQuery, H5P.Question, H5P.JoubelUI, H5P.Letter, H5P.XapiGenerator);

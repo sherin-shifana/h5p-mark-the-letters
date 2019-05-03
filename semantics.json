@@ -124,6 +124,47 @@
     ]
   },
   {
+   "name": "behaviour",
+   "importance": "low",
+   "type": "group",
+   "label": "Behavioural settings.",
+   "description": "These options will let you control how the task behaves.",
+   "optional": true,
+   "fields": [
+     {
+       "name": "enableRetry",
+       "type": "boolean",
+       "label": "Enable \"Retry\"",
+       "importance": "low",
+       "default": true
+     },
+     {
+       "name": "enableSolutionsButton",
+       "type": "boolean",
+       "label": "Enable \"Show solution\" button",
+       "importance": "low",
+       "default": true
+     },
+     {
+       "name": "enableCheckButton",
+       "type": "boolean",
+       "label": "Enable \"Check\" button",
+       "widget": "none",
+       "importance": "low",
+       "default": true,
+       "optional": true
+     },
+     {
+       "name": "showScorePoints",
+       "type": "boolean",
+       "label": "Show score points",
+       "description": "Show points earned for each answer.",
+       "importance": "low",
+       "default": true
+     }
+   ]
+  },
+  {
     "label": "Text for \"Check\" button",
     "importance": "low",
     "name": "checkAnswerButton",

@@ -26,24 +26,25 @@
      * @type {string}
      */
     MarkTheLetters.Letter.ID_MARK_INCORRECT = "h5p-description-incorrect";
-
+    
     var that = this;
     EventDispatcher.call(that);
-
     var input = $letter.text();
     var handledInput = input;
     var isAnswer;
-    solution = solution.replace(/,/g, "");
 
     if (addSolution) {
       /**
       *
       * Also the letters given the add solution field is counted as answers along with the letters marked with asterisks(*) before and after.
       */
-      handledInput = handledInput.toLowerCase();
-      for (var i=0; i<solution.length; i++) {
-        if (handledInput === solution[i]) {
-          handledInput = '*' + handledInput + '*' ;
+      if (solution != undefined) {
+        this.solution = solution.replace(/,/g, "");
+        handledInput = handledInput.toLowerCase();
+        for (var i=0; i<solution.length; i++) {
+          if (handledInput === solution[i]) {
+            handledInput = '*' + handledInput + '*' ;
+          }
         }
       }
 
