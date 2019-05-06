@@ -33,11 +33,11 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
   MarkTheLetters.prototype.constructor = MarkTheLetters;
 
   /**
-  * Recursive function that creates html for the letters
-  * @method createHtmlForLetters
-  * @param  {Array}           nodes Array of dom nodes
-  * @return {string}
-  */
+   * Recursive function that creates html for the letters
+   * @method createHtmlForLetters
+   * @param  {Array}           nodes Array of dom nodes
+   * @return {string}
+   */
   MarkTheLetters.prototype.createHtmlForLetters = function (nodes) {
     var html = '';
     for (let i = 0; i < nodes.length; i++) {
@@ -50,8 +50,8 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
           entry = entry.trim();
 
           /**
-          * Add span to all entries except special characters.
-          */
+           * Add span to all entries except special characters.
+           */
           if (entry !== "." && entry !== "," && entry !== "'") {
 
             // letter
@@ -99,8 +99,8 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
 
     $letterContainer.find('[role="option"]').each(function () {
       /**
-      * Initialize the letter to be used in the task
-      */
+       * Initialize the letter to be used in the task
+       */
       var selectableLetter = new MarkTheLetters.Letter($(this), that.params.addSolution, that.params.solution);
 
       if (selectableLetter.isAnswer()) {
@@ -108,15 +108,14 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
       }
       that.selectableLetters.push(selectableLetter);
       /**
-      * Set tabindex of first element to 0.
-      */
+       * Set tabindex of first element to 0.
+       */
       var $current = $letterContainer.find('[role="option"]').first().attr("tabindex", 0);
       var clkCount = 0;
 
       // on letter clicked
       $(this).click(function () {
         clkCount++;
-        // $(this).toggle();
         that.onClickSelectables(selectableLetter, clkCount);
         that.triggerXAPI('interacted');
       })
@@ -161,15 +160,15 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
 
 
     /**
-    * Attach dom elements to the container.
-    */
+     * Attach dom elements to the container.
+     */
     $letterContainer.appendTo($container);
     that.$letterContainer = $letterContainer;
     /**
-    * Resize event
-    *
-    * @event MarkTheLetters#resize
-    */
+     * Resize event
+     *
+     * @event MarkTheLetters#resize
+     */
     this.trigger('resize');
   };
 
@@ -184,33 +183,32 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
   };
 
   /**
-  * Add check answer, show solution, and retry buttons.
-  */
+   * Add check answer, show solution, and retry buttons.
+   */
   MarkTheLetters.prototype.addButtons = function () {
     var that = this;
     that.$buttonContainer = $('<div/>', {
       'class': 'h5p-button-bar'
     });
 
-    if (that.params.behaviour.enableCheckButton) {
-      this.addButton('check-answer', that.params.checkAnswerButton, function () {
-        that.isAnswered = true;
-        var answers = that.calculateScore();
-        that.feedbackSelectedLetters();
 
-        if (!that.showEvaluation(answers)) {
-          // Only show if a correct answer was not found.
-          if (that.params.behaviour.enableSolutionsButton && (answers.correct < that.answers)) {
-            that.showButton('show-solution');
-          }
-          if (that.params.behaviour.enableRetry) {
-            that.showButton('try-again');
-          }
+    this.addButton('check-answer', that.params.checkAnswerButton, function () {
+      that.isAnswered = true;
+      var answers = that.calculateScore();
+      that.feedbackSelectedLetters();
+
+      if (!that.showEvaluation(answers)) {
+        // Only show if a correct answer was not found.
+        if (that.params.behaviour.enableSolutionsButton && (answers.correct < that.answers)) {
+          that.showButton('show-solution');
         }
-        that.hideButton('check-answer');
-        that.trigger(that.XapiGenerator.generateAnsweredEvent());
-      });
-    }
+        if (that.params.behaviour.enableRetry) {
+          that.showButton('try-again');
+        }
+      }
+      that.hideButton('check-answer');
+      that.trigger(that.XapiGenerator.generateAnsweredEvent());
+    });
 
     this.addButton('try-again', this.params.tryAgainButton, this.resetTask.bind(this), false);
 
@@ -247,10 +245,10 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
     this.hideButton('show-solution');
     this.showButton('check-answer');
     /**
-    * Resize event
-    *
-    * @event MarkTheLetters#resize
-    */
+     * Resize event
+     *
+     * @event MarkTheLetters#resize
+     */
     this.trigger('resize');
   };
 
