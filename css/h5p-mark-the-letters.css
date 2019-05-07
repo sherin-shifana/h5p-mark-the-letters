@@ -15,11 +15,13 @@
 
 /* Actual text paragraphs */
 .h5p-mark-the-letters .h5p-letter-inner {
-  font-size: 1em;
+  font-size: 1.2em;
   font-weight: normal;
-  padding-right: 2.5em;
+  padding-right: 1.5em;
   margin: 0 0 1em;
   text-align: justify;
+  /* letter-spacing: 8px; */
+  word-spacing:1em;
   /* color: #192538; */
 }
 
@@ -33,8 +35,8 @@
 /* Selectable letters*/
 .h5p-mark-the-letters [role="option"] {
   white-space: nowrap;
-  padding: 0.15em;
-  margin-right: .125em;
+  padding: 0.1em;
+  margin-right: .1em;
   border-radius: 0.25em;
   cursor: pointer;
   position: relative;

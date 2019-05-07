@@ -34,7 +34,7 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
 
   /**
    * Recursive function that creates html for the letters
-   * @method createHtmlForLetters
+   * @method
    * @param  {Array}           nodes Array of dom nodes
    * @return {string}
    */
@@ -43,16 +43,17 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
     for (let i = 0; i < nodes.length; i++) {
       var node = nodes[i];
       var text = $(node).text();
-      var selectableStrings = text.match(/[.,/;'`]|[a-zA-Z]|(\*[a-zA-Z]\*)|/g);
+      var selectableStrings = text.match(/[.,/;'` ]|[a-zA-Z]|(\*[a-zA-Z]\*)|/g);
 
       if (selectableStrings) {
         selectableStrings.forEach(function (entry) {
+
           entry = entry.trim();
 
           /**
            * Add span to all entries except special characters.
            */
-          if (entry !== "." && entry !== "," && entry !== "'") {
+          if (entry !== "." && entry !== "," && entry !== "'" ) {
 
             // letter
             if (entry.length) {

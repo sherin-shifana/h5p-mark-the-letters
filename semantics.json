@@ -36,8 +36,11 @@
       "h3",
       "hr"
     ],
-    "description": "Correct letters are marked with asterisks (*) before and after the letter. ",
-    "placeholder": "correct answer is *answer*"
+    "placeholder": "The correct answer: *a*nswer",
+    "important": {
+      "description": "<ul>Correct letters are marked with asterisks (*) before and after the letter.</ul>",
+      "example": "The correct letters from a word/sentence/paragraph is marked as *a*nswer"
+    }
   },
   {
     "name": "addSolution",
@@ -63,7 +66,8 @@
     "name": "solution",
     "type": "text",
     "optional": true,
-    "description": "Enter the correct solution here if you need to take all occurance of the specific letter as answer."
+    "description": "Enter the correct solution here if you need to take all occurance of the specific letter as answer. Answers should be sperated with a comma (,) .",
+    "placeholder": "Example: a,b,c"
   },
   {
     "name": "overallFeedback",
