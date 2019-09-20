@@ -42,32 +42,27 @@
       "example": "The correct letters from a word/sentence/paragraph is marked as *a*nswer"
     }
   },
+
   {
-    "name": "addSolution",
-    "label": "Give solution separately",
-    "type": "select",
-    "alignment": "horizontal",
-    "widget": "radioGroup",
-    "options": [
-      {
-        "value": "true",
-        "label": "Yes"
-      },
-      {
-        "value": "false",
-        "label": "No"
-      }
-    ],
-    "default": "true"
+        "name": "addSolution",
+        "label": "Give solution separately",
+        "type": "boolean",
+        "default": true
   },
   {
-    "label": "Solution",
-    "importance": "high",
     "name": "solution",
     "type": "text",
-    "optional": true,
-    "description": "Enter the correct solution here if you need to take all occurance of the specific letter as answer. Answers should be sperated with a comma (,) .",
-    "placeholder": "Example: a,b,c"
+    "label": "Use browser's fullscreen mode",
+    "default":false,
+    "widget": "showWhen",
+    "showWhen": {
+      "rules": [
+        {
+          "field": "addSolution",
+          "equals": true
+        }
+      ]
+    }
   },
   {
     "name": "overallFeedback",

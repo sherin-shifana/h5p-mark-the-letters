@@ -28,8 +28,6 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
     this.XapiGenerator = new MarkTheLetters.XapiGenerator(this);
   }
 
-  MarkTheLetters.prototype = Object.create(H5P.EventDispatcher.prototype);
-  MarkTheLetters.prototype = Object.create(H5P.Question.prototype);
   MarkTheLetters.prototype.constructor = MarkTheLetters;
 
   /**
@@ -53,8 +51,8 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
           /**
            * Add span to all entries except special characters.
            */
-          if (entry !== "." && entry !== "," && entry !== "'" ) {
 
+          if (entry !== "." && entry !== "," && entry !== "'" ) {
             // letter
             if (entry.length) {
               html += '<span role="option">' + entry + '</span>';
@@ -68,6 +66,7 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
           else {
             html += entry;
           }
+
         });
       }
       else if ((selectableStrings !== null) && text.length) {
@@ -195,6 +194,7 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
 
     this.addButton('check-answer', that.params.checkAnswerButton, function () {
       that.isAnswered = true;
+      that.$letterContainer.find('[role="option"]').unbind('click');
       var answers = that.calculateScore();
       that.feedbackSelectedLetters();
 
@@ -215,7 +215,6 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
 
     this.addButton('show-solution', this.params.showSolutionButton, function () {
       that.setAllMarks();
-
       if (that.params.behaviour.enableRetry) {
         that.showButton('try-again');
       }
@@ -239,6 +238,8 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
   // When retry button is clicked
   MarkTheLetters.prototype.resetTask = function () {
     // Reset task
+    const that = this;
+    that.$letterContainer.find('[role="option"]').bind('click');
     this.isAnswered = false;
     this.clearAllMarks();
     this.hideEvaluation();
