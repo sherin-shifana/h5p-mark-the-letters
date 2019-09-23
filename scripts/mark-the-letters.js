@@ -5,7 +5,7 @@
  * @external {jQuery} $ H5P.jQuery
  * @external {UI} UI H5P.JoubelUI
  */
-H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
+H5P.MarkTheLetters = (function ($, Question) {
   /**
    * Initialize module.
    *
@@ -28,6 +28,7 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
     this.XapiGenerator = new MarkTheLetters.XapiGenerator(this);
   }
 
+  MarkTheLetters.prototype = Object.create(H5P.EventDispatcher.prototype);
   MarkTheLetters.prototype.constructor = MarkTheLetters;
 
   /**
@@ -39,33 +40,35 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
   MarkTheLetters.prototype.createHtmlForLetters = function (nodes) {
     var html = '';
     for (let i = 0; i < nodes.length; i++) {
+
       var node = nodes[i];
       var text = $(node).text();
-      var selectableStrings = text.match(/[.,/;'` ]|[a-zA-Z]|(\*[a-zA-Z]\*)|/g);
-
+      var selectableStrings = text.replace(/(&nbsp;|\r\n|\n|\r)/g, ' ')
+        .match(/ \*[^\*]+\* |[^\s]+/g);
       if (selectableStrings) {
         selectableStrings.forEach(function (entry) {
-
-          entry = entry.trim();
+          entry = entry.match(/[.,/;'`/s]|[a-zA-Z0-9]|(\*[a-zA-Z0-9]\*)|/g);
 
           /**
            * Add span to all entries except special characters.
            */
+          html += '<span class="h5p-mark-the-letters-word">';
 
-          if (entry !== "." && entry !== "," && entry !== "'" ) {
-            // letter
-            if (entry.length) {
-              html += '<span role="option">' + entry + '</span>';
+          for (var j = 0; j < entry.length; j++) {
+            if (!entry[j].match(/^[!@#$%\\^&*)(+=._-]*$/g)) {
+              // letter
+              if (entry[j].length) {
+
+                html += '<span role="option">' + entry[j] + '</span>';
+              }
             }
 
-            // Add space after every letter.
-            else if ($(html).text()) {
-              html += ' ';
+            else {
+              html += entry[j];
             }
           }
-          else {
-            html += entry;
-          }
+
+          html += '</span>' + ' ';
 
         });
       }
@@ -82,8 +85,8 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
    * @param {jQuery} $container The object which our task will attach to.
    */
   MarkTheLetters.prototype.addTaskTo = function ($container) {
+    const that = this;
     $container.addClass("h5p-mark-the-letters");
-    var that = this;
     // Task description
     that.selectableLetters = [];
     that.answers = 0;
@@ -186,7 +189,7 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
    * Add check answer, show solution, and retry buttons.
    */
   MarkTheLetters.prototype.addButtons = function () {
-    var that = this;
+    const that = this;
     that.$buttonContainer = $('<div/>', {
       'class': 'h5p-button-bar'
     });
@@ -194,7 +197,7 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
 
     this.addButton('check-answer', that.params.checkAnswerButton, function () {
       that.isAnswered = true;
-      that.$letterContainer.find('[role="option"]').unbind('click');
+      that.$letterContainer.find('[role="option"]').addClass('h5p-letter-remove-binding');
       var answers = that.calculateScore();
       that.feedbackSelectedLetters();
 
@@ -239,7 +242,7 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
   MarkTheLetters.prototype.resetTask = function () {
     // Reset task
     const that = this;
-    that.$letterContainer.find('[role="option"]').bind('click');
+    that.$letterContainer.find('[role="option"]').removeClass('h5p-letter-remove-binding');
     this.isAnswered = false;
     this.clearAllMarks();
     this.hideEvaluation();
@@ -266,6 +269,31 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
 
     this.$letterContainer.removeClass('h5p-disable-hover');
     this.trigger('resize');
+  };
+
+  /**
+    * Counts the score, which is correct answers subtracted by wrong answers.
+    * @returns {Number} score The amount of points achieved.
+    */
+  MarkTheLetters.prototype.getScore = function () {
+    const that = this;
+    return that.calculateScore().score;
+  };
+
+  /**
+    * Get maximum score
+    * @returns {Number} score The amount of points achieved.
+    */
+  MarkTheLetters.prototype.getMaxScore = function () {
+    return this.answers;
+  };
+
+  /**
+   * Get title
+   * @returns {string}
+   */
+  MarkTheLetters.prototype.getTitle = function () {
+    return H5P.createTitle((this.contentData && this.contentData.metadata && this.contentData.metadata.title) ? this.contentData.metadata.title : 'Mark the Letters');
   };
 
   /**
@@ -347,7 +375,6 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
 
     // no negative score
     answers.score = Math.max(answers.correct - answers.wrong, 0);
-
     return answers;
   };
 
@@ -376,8 +403,9 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
    * @return {Object}
    */
   MarkTheLetters.prototype.getXAPIData = function () {
+    const that = this;
     return {
-      statement: this.XapiGenerator.generateAnsweredEvent().data.statement
+      statement: that.XapiGenerator.generateAnsweredEvent().data.statement
     };
   };
 
@@ -398,4 +426,4 @@ H5P.MarkTheLetters = (function ($, Question, UI, Letter, XapiGenerator) {
   };
 
   return MarkTheLetters;
-})(H5P.jQuery, H5P.Question, H5P.JoubelUI, H5P.Letter, H5P.XapiGenerator);
+})(H5P.jQuery, H5P.Question);

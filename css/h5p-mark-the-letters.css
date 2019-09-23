@@ -31,11 +31,16 @@
   line-height: 3;
 }
 
+/* Words */
+.h5p-mark-the-letters-word {
+  margin-right: 1rem auto;
+}
+
 /* Selectable letters*/
 .h5p-mark-the-letters [role="option"] {
   white-space: nowrap;
-  padding: 0.1em;
-  margin-right: .1em;
+  padding: 0.08em;
+  /* margin-right: .1em; */
   border-radius: 0.25em;
   cursor: pointer;
   position: relative;
@@ -90,4 +95,8 @@
   content: "\f00d";
   color: #b71c1c;
   padding-left: 0.75em;
+}
+
+.h5p-mark-the-letters [role="option"].h5p-letter-remove-binding {
+  pointer-events: none;
 }

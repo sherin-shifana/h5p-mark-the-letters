@@ -21,11 +21,11 @@ H5P.MarkTheLetters.XapiGenerator = (function ($) {
       var objectDefinition = createDefinition(MarkTheLetters);
       $.extend(true, xAPIEvent.getVerifiedStatementValue(['object', 'definition']), objectDefinition);
       // Set score
-      xAPIEvent.setScoredResult(MarkTheLetters.score,
-        MarkTheLetters.max,
+      xAPIEvent.setScoredResult(MarkTheLetters.getScore(),
+        MarkTheLetters.getMaxScore(),
         MarkTheLetters,
         true,
-        MarkTheLetters.score === MarkTheLetters.max
+        MarkTheLetters.getScore() === MarkTheLetters.getMaxScore()
       );
       // Extend user result
       var userResult = {
@@ -33,7 +33,6 @@ H5P.MarkTheLetters.XapiGenerator = (function ($) {
       };
 
       $.extend(xAPIEvent.getVerifiedStatementValue(['result']), userResult);
-
       return xAPIEvent;
     };
   }
@@ -116,6 +115,5 @@ H5P.MarkTheLetters.XapiGenerator = (function ($) {
         return prev;
       }, []).join('[,]');
   }
-
   return XapiGenerator;
 })(H5P.jQuery);
