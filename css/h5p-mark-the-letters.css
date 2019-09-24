@@ -1,13 +1,14 @@
+
 /* The main containers for the module, specific to this module. */
 .h5p-mark-the-letters {
   position: relative;
   margin: 2em;
   background: rgba(255, 255, 255, 0.9);
-  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#e6FFFFFF,endColorstr=#e6FFFFFF);
+  filter: progid:DXImageTransform.Microsoft.gradient(startColorstr=#e6FFFFFF, endColorstr=#e6FFFFFF);
   overflow: hidden;
 }
 
-.h5p-mark-the-letters .h5p-task-description{
+.h5p-mark-the-letters .h5p-task-description {
   font-size: 1.25em;
   text-transform: capitalize;
   font-weight: 500;
@@ -19,10 +20,9 @@
   font-weight: normal;
   padding-right: 1.5em;
   margin: 0 0 1em;
-  /* letter-spacing: 8px; */
-  word-spacing:1em;
-  /* color: #192538; */
+  word-spacing: 1em;
 }
+
 
 /* Selectable letters container */
 .h5p-mark-the-letters .h5p-letter-selectable-letters {
@@ -31,16 +31,18 @@
   line-height: 3;
 }
 
+
 /* Words */
 .h5p-mark-the-letters-word {
   margin-right: 1rem auto;
 }
 
+
 /* Selectable letters*/
 .h5p-mark-the-letters [role="option"] {
   white-space: nowrap;
   padding: 0.08em;
-  /* margin-right: .1em; */
+  margin-right: .05em;
   border-radius: 0.25em;
   cursor: pointer;
   position: relative;
@@ -55,6 +57,7 @@
   background: #cee0f4;
 }
 
+
 /* Missed letter*/
 .h5p-mark-the-letters [aria-describedby="h5p-description-missed"] {
   border: 0.1em #77b395 dotted;
@@ -68,6 +71,7 @@
   display: inline-block;
   line-height: 1;
 }
+
 /* Wrongly answered marking */
 .h5p-mark-the-letters [aria-describedby="h5p-description-incorrect"] {
   background-color: #f7d0d0;
@@ -76,7 +80,7 @@
   display: inline-block;
   line-height: 1;
 }
-/* Feedback icons */
+
 .h5p-mark-the-letters [aria-describedby="h5p-description-correct"]:after {
   position: relative;
   right: 0.1em;
@@ -86,6 +90,7 @@
   color: #255c41;
   padding-left: 0.75em;
 }
+
 .h5p-mark-the-letters [aria-describedby="h5p-description-incorrect"]:after {
   position: relative;
   right: 0.1em;

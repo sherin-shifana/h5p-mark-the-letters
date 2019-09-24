@@ -8,11 +8,11 @@
    * @param {jQuery} $letter
    */
   MarkTheLetters.Letter = function ($letter, addSolution, solution) {
-  /**
-   * @constant
-   *
-   * @type {string}
-   */
+    /**
+     * @constant
+     *
+     * @type {string}
+     */
     MarkTheLetters.Letter.ID_MARK_MISSED = "h5p-description-missed";
     /**
      * @constant
@@ -35,15 +35,15 @@
 
     if (addSolution) {
       /**
-      *
-      * Also the letters given the add solution field is counted as answers along with the letters marked with asterisks(*) before and after.
-      */
+       *
+       * Also the letters given the add solution field is counted as answers along with the letters marked with asterisks(*) before and after.
+       */
       if (solution != undefined) {
-        solution = solution.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>\{\}\[\]\\\/]/gi, '');
+        solution = solution.replace(/[ ]/gi, '');
         handledInput = handledInput.toLowerCase();
-        for (var i=0; i<solution.length; i++) {
+        for (var i = 0; i < solution.length; i++) {
           if (handledInput === solution[i]) {
-            handledInput = '*' + handledInput + '*' ;
+            handledInput = '*' + handledInput + '*';
           }
         }
       }
@@ -56,9 +56,9 @@
     }
     else {
       /**
-      *
-      * Only letters marked with asterisks (*) before and after in task description are the answers.
-      */
+       *
+       * Only letters marked with asterisks (*) before and after in task description are the answers.
+       */
 
       // Check if letter is an answer
       isAnswer = checkForAnswer();
@@ -88,7 +88,7 @@
     // Remove the single asterisk before and after the letter.
     function handleAsterisks() {
       if (handledInput.includes('*')) {
-        handledInput = handledInput.slice(1,-1);
+        handledInput = handledInput.slice(1, -1);
       }
     }
 
@@ -164,11 +164,11 @@
     };
 
     /**
-    * Checks if the letter is correct, but has not been marked.
-    *
-    * @public
-    * @returns {Boolean} True if the marking is missed.
-    */
+     * Checks if the letter is correct, but has not been marked.
+     *
+     * @public
+     * @returns {Boolean} True if the marking is missed.
+     */
     this.isMissed = function () {
       return (isAnswer && !this.isSelected());
     };
