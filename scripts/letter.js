@@ -39,7 +39,7 @@
        * Also the letters given the add solution field is counted as answers along with the letters marked with asterisks(*) before and after.
        */
       if (solution != undefined) {
-        solution = solution.replace(/[ ]/gi, '');
+        solution = solution.replace(/[`~!@#$%^&*()_|+\-=?;:'",.<>{}[]]/gi, '');
         handledInput = handledInput.toLowerCase();
         for (var i = 0; i < solution.length; i++) {
           if (handledInput === solution[i]) {

@@ -23,7 +23,6 @@
   word-spacing: 1em;
 }
 
-
 /* Selectable letters container */
 .h5p-mark-the-letters .h5p-letter-selectable-letters {
   line-height: 1.75em;
@@ -31,12 +30,10 @@
   line-height: 3;
 }
 
-
 /* Words */
 .h5p-mark-the-letters-word {
-  margin-right: 1rem auto;
+  /* margin-right: 1rem auto; */
 }
-
 
 /* Selectable letters*/
 .h5p-mark-the-letters [role="option"] {

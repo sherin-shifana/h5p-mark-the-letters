@@ -1,49 +1,54 @@
 {
-  "title":"Mark the Letters",
-  "description":"Test your users by making them select the correct letter from a text.",
-  "majorVersion":1,
-  "minorVersion":2,
-  "patchVersion":1,
-  "runnable":1,
-  "embedTypes":[
+  "title": "Mark the Letters",
+  "description": "Test your users by making them select the correct letter from a text.",
+  "majorVersion": 1,
+  "minorVersion": 2,
+  "patchVersion": 1,
+  "runnable": 1,
+  "embedTypes": [
     "iframe"
   ],
-  "author":"H5P-SPACE",
-  "license":"MIT",
-  "machineName":"H5P.MarkTheLetters",
-  "preloadedJs":[
+  "author": "H5P-SPACE",
+  "license": "MIT",
+  "machineName": "H5P.MarkTheLetters",
+  "preloadedJs": [
     {
-      "path":"scripts/mark-the-letters.js"
+      "path": "scripts/mark-the-letters.js"
     },
     {
-      "path":"scripts/xAPI-generator.js"
+      "path": "scripts/xAPI-generator.js"
     },
     {
-      "path":"scripts/letter.js"
+      "path" : "scripts/letter.js"
     }
   ],
-  "preloadedCss":[
+  "preloadedCss": [
     {
-      "path":"css/h5p-mark-the-letters.css"
+      "path": "css/h5p-mark-the-letters.css"
     }
   ],
-  "preloadedDependencies":[
+  "preloadedDependencies": [
     {
-      "machineName":"H5P.Question",
-      "majorVersion":1,
-      "minorVersion":4
-    }
-  ],
-  "editorDependencies":[
-    {
-      "machineName":"H5PEditor.RangeList",
-      "majorVersion":1,
-      "minorVersion":0
+      "machineName": "FontAwesome",
+      "majorVersion": 4,
+      "minorVersion": 5
     },
     {
-      "machineName":"H5PEditor.ShowWhen",
-      "majorVersion":1,
-      "minorVersion":0
+      "machineName": "H5P.Question",
+      "majorVersion": 1,
+      "minorVersion": 4
+    }
+  ],
+  "editorDependencies": [
+    {
+      "machineName": "H5PEditor.RangeList",
+      "majorVersion": 1,
+      "minorVersion": 0
+    },
+    {
+      "machineName": "H5PEditor.ShowWhen",
+      "majorVersion": 1,
+      "minorVersion": 0
     }
   ]
 }

@@ -47,7 +47,7 @@ H5P.MarkTheLetters = (function ($, Question) {
         .match(/ \*[^\*]+\* |[^\s]+/g);
       if (selectableStrings) {
         selectableStrings.forEach(function (entry) {
-          entry = entry.match(/[.,/;'`/s]|[a-zA-Z0-9]|(\*[a-zA-Z0-9]\*)|/g);
+          entry = entry.match(/\S/g);
 
           /**
            * Add span to all entries except special characters.
@@ -55,13 +55,14 @@ H5P.MarkTheLetters = (function ($, Question) {
           html += '<span class="h5p-mark-the-letters-word">';
 
           for (var j = 0; j < entry.length; j++) {
-            if (!entry[j].match(/^[ ]*$/g)) {
+            if (!entry[j].match(/^[!@#$%\\^&*)(+=._,-]*$/g)) {
               // letter
               if (entry[j].length) {
 
                 html += '<span role="option">' + entry[j] + '</span>';
               }
             }
+
             else {
               html += entry[j];
             }
@@ -166,7 +167,6 @@ H5P.MarkTheLetters = (function ($, Question) {
      */
     $letterContainer.appendTo($container);
     that.$letterContainer = $letterContainer;
-
     /**
      * Resize event
      *
@@ -193,6 +193,7 @@ H5P.MarkTheLetters = (function ($, Question) {
     that.$buttonContainer = $('<div/>', {
       'class': 'h5p-button-bar'
     });
+
 
     this.addButton('check-answer', that.params.checkAnswerButton, function () {
       that.isAnswered = true;
@@ -248,7 +249,6 @@ H5P.MarkTheLetters = (function ($, Question) {
     this.hideButton('try-again');
     this.hideButton('show-solution');
     this.showButton('check-answer');
-
     /**
      * Resize event
      *
@@ -272,18 +272,18 @@ H5P.MarkTheLetters = (function ($, Question) {
   };
 
   /**
-   * Counts the score, which is correct answers subtracted by wrong answers.
-   * @returns {Number} score The amount of points achieved.
-   */
+    * Counts the score, which is correct answers subtracted by wrong answers.
+    * @returns {Number} score The amount of points achieved.
+    */
   MarkTheLetters.prototype.getScore = function () {
     const that = this;
     return that.calculateScore().score;
   };
 
   /**
-   * Get maximum score
-   * @returns {Number} score The amount of points achieved.
-   */
+    * Get maximum score
+    * @returns {Number} score The amount of points achieved.
+    */
   MarkTheLetters.prototype.getMaxScore = function () {
     return this.answers;
   };

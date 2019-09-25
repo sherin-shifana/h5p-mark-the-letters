@@ -52,7 +52,6 @@
     "name":"solution",
     "type":"text",
     "label":"Solution",
-    "default":true,
     "widget":"showWhen",
     "showWhen":{
       "rules":[
