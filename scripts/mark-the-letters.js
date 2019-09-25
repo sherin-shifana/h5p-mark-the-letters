@@ -47,18 +47,17 @@ H5P.MarkTheLetters = (function ($, Question) {
         .match(/ \*[^\*]+\* |[^\s]+/g);
       if (selectableStrings) {
         selectableStrings.forEach(function (entry) {
-          entry = entry.match(/\S/g);
-
+          entry = entry.match(/(\*[\S]\*)|([\S])/g);
           /**
            * Add span to all entries except special characters.
            */
           html += '<span class="h5p-mark-the-letters-word">';
 
           for (var j = 0; j < entry.length; j++) {
-            if (!entry[j].match(/^[!@#$%\\^&*)(+=._,-]*$/g)) {
+
+            if (!entry[j].match(/^[!@#$%*\\^&)(+=._,-]*$/g)) {
               // letter
               if (entry[j].length) {
-
                 html += '<span role="option">' + entry[j] + '</span>';
               }
             }
